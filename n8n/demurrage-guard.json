@@ -1,0 +1,1171 @@
+{
+  "name": "DemurrageGuard",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "DemurrageGuard: audit a carrier invoice",
+        "formDescription": "Upload a demurrage / detention invoice (PDF). AI reads it, our engine checks it against your contract, terminal gate records, the port calendar and US FMC billing rules. Then you decide what to do.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Invoice PDF",
+              "fieldType": "file",
+              "multipleFiles": false,
+              "acceptFileTypes": ".pdf",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false,
+          "buttonLabel": "Audit invoice",
+          "customCss": ":root{--container-width:720px}\ndiv.html table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0 4px}\ndiv.html th{text-align:left;border-bottom:2px solid #9ca3af;padding:5px 6px;color:#374151}\ndiv.html td{padding:5px 6px;border-bottom:1px solid #e5e7eb;vertical-align:top;color:#374151}\ndiv.html tbody tr:nth-child(even) td{background:#f9fafb}\ndiv.html td b{color:#b45309}\ndiv.html td u{color:#15803d;text-decoration:none;font-weight:600}\ndiv.html td i{color:#6b7280;font-weight:600}\ndiv.html td em{color:#b91c1c;font-weight:700;font-style:normal}\ndiv.html h2{color:#b91c1c;font-size:26px;margin:4px 0 6px}\ndiv.html h3{color:#15803d;font-size:26px;margin:4px 0 6px}\ndiv.html h4{color:#1e3a8a;margin:16px 0 4px;font-size:15px}\ndiv.html p strong{display:inline-block;background:#fff4dc;color:#8a5a00;padding:3px 10px;border-radius:999px}\ndiv.html code{display:block;font-family:inherit;font-size:12px;background:#eef3fd;color:#1e3a8a;padding:6px 10px;border-radius:6px;margin-bottom:8px}\ndiv.html pre{white-space:pre-wrap;font-family:inherit;background:#f8f8f8;padding:12px;border-radius:8px}\n"
+        }
+      },
+      "id": "38bbe011-7863-4d17-b45f-1f274a2a26e3",
+      "name": "Upload Invoice",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        300
+      ],
+      "webhookId": "96e9650d-5992-474c-8f19-b6113e654554"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "={{ Object.keys($binary || {})[0] || 'Invoice_PDF' }}",
+        "options": {}
+      },
+      "id": "00044e14-4289-4eed-8ce9-53f5c4b4cb92",
+      "name": "Read PDF Text",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        220,
+        300
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "51db47c1-6d27-43c8-8685-ed01200b6d12",
+              "name": "engine_url",
+              "value": "https://demurrage-engine-app.alternatefutures.ai",
+              "type": "string"
+            },
+            {
+              "id": "5698857a-95fe-4c34-9a23-99c1a8dd8703",
+              "name": "as_of_date",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "7328bb6f-429b-4424-ad75-526b917f5176",
+              "name": "pdf_text",
+              "value": "={{ ($json.text || '').slice(0, 12000) }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": false,
+        "options": {}
+      },
+      "id": "147d385f-5e80-46d5-8348-5dca69a1684e",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        440,
+        300
+      ],
+      "notes": "engine_url: your engine service URL. as_of_date: leave empty for today, or YYYY-MM-DD to pin the demo."
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.pdf_text }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "carrier",
+              "type": "string",
+              "description": "Shipping line that issued the invoice"
+            },
+            {
+              "name": "invoice_number",
+              "type": "string",
+              "description": "Invoice number"
+            },
+            {
+              "name": "invoice_date",
+              "type": "string",
+              "description": "Issue date, YYYY-MM-DD"
+            },
+            {
+              "name": "container_id",
+              "type": "string",
+              "description": "Container number, e.g. ABCU1234567"
+            },
+            {
+              "name": "charge_start",
+              "type": "string",
+              "description": "First billed day, YYYY-MM-DD"
+            },
+            {
+              "name": "charge_end",
+              "type": "string",
+              "description": "Last billed day, YYYY-MM-DD"
+            },
+            {
+              "name": "rate_per_day",
+              "type": "number",
+              "description": "Daily rate charged"
+            },
+            {
+              "name": "billed_days",
+              "type": "number",
+              "description": "Number of days billed"
+            },
+            {
+              "name": "total_amount",
+              "type": "number",
+              "description": "Total amount due"
+            },
+            {
+              "name": "currency",
+              "type": "string",
+              "description": "Currency code, e.g. USD"
+            }
+          ]
+        },
+        "options": {
+          "systemPromptTemplate": "You extract fields from an ocean-freight carrier demurrage/detention invoice. Copy values exactly as printed; do not calculate or infer anything. Dates must be YYYY-MM-DD. container_id is 4 letters + 7 digits with spaces and dashes removed. charge_start and charge_end are the first and last day of the billed charge period. Numbers without currency symbols or commas. If a field is not on the invoice, omit it. Never guess."
+        }
+      },
+      "id": "2a852716-9f28-476d-8fae-97b7aad78869",
+      "name": "AI: Read Invoice",
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1,
+      "position": [
+        660,
+        300
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {
+          "temperature": 0
+        }
+      },
+      "id": "3bb9207b-264e-4773-9474-5c2f2947b449",
+      "name": "Groq (extract)",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        660,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Config').first().json.engine_url }}/audit",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ invoice: $json.output || {}, as_of_date: $('Config').first().json.as_of_date }) }}",
+        "options": {
+          "timeout": 20000
+        }
+      },
+      "id": "342d0255-af99-486d-803b-83c6f2325cba",
+      "name": "Engine: Audit",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        880,
+        300
+      ],
+      "onError": "continueRegularOutput",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 2000,
+      "notes": "Deterministic truth. If the engine is down: retried once, then the human gets a fix/explain page."
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Audit this invoice with the audit_invoice tool.\nInvoice fields: {{ JSON.stringify($('AI: Read Invoice').first().json.output || {}) }}{{ $('Config').first().json.as_of_date ? '\\nas_of_date: ' + $('Config').first().json.as_of_date : '' }}",
+        "options": {
+          "systemMessage": "You are an invoice verification agent connected to the DemurrageGuard MCP server. Call the audit_invoice tool exactly once, passing the invoice fields you are given (dates as YYYY-MM-DD). Never do any arithmetic yourself. After the tool returns, reply with ONLY a JSON object copied from the tool result: {\"verdict\": ..., \"correct_days\": ..., \"correct_amount\": ..., \"overcharge\": ...}",
+          "maxIterations": 4
+        }
+      },
+      "id": "5cce0684-54d3-464d-86f8-401a8f333cfa",
+      "name": "AI Agent: Verify via MCP",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        1100,
+        300
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {
+          "temperature": 0
+        }
+      },
+      "id": "34b61ec0-64b2-41b6-86fe-3bcd782421e0",
+      "name": "Groq (agent)",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        1040,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "endpointUrl": "https://demurrage-engine-app.alternatefutures.ai/mcp",
+        "serverTransport": "httpStreamable"
+      },
+      "id": "738c928c-aef5-4617-9f3e-393596981d17",
+      "name": "MCP: DemurrageGuard Engine",
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.1,
+      "position": [
+        1200,
+        520
+      ],
+      "notes": "Must point at <engine URL>/mcp (HTTP Streamable)."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Guard: the AI agent (via MCP) and the REST engine must agree. Code is the source of truth.\nconst rest = $('Engine: Audit').first().json;\nconst raw = (typeof $json.output === 'string') ? $json.output : '';\nlet guard = { status: 'unavailable',\n  note: 'AI agent cross-check unavailable; showing the deterministic engine result.' };\nif (rest.ok && raw) {\n  try {\n    const m = raw.match(/\\{[\\s\\S]*\\}/);\n    const a = JSON.parse(m ? m[0] : raw);\n    const same = Number(a.overcharge) === Number(rest.overcharge)\n              && Number(a.correct_days) === Number(rest.correct_days);\n    guard = same\n      ? { status: 'match', note: `AI agent (via MCP) and engine agree: ${rest.correct_days} chargeable days, difference $${rest.overcharge}.` }\n      : { status: 'mismatch', note: `AI agent said overcharge ${a.overcharge}, engine says ${rest.overcharge}. Using the engine: code is the source of truth.` };\n  } catch (e) { /* keep 'unavailable' */ }\n}\nif (!rest.ok && !rest.error) {\n  rest.error = { code: 'ENGINE_UNREACHABLE', message: 'The audit engine did not respond. Check the engine service, or enter the details manually.' };\n}\nconst icon = { match: '\\u2713', mismatch: '!', unavailable: 'i' }[guard.status];\nconst badge = `<code>${icon} Cross-check: ${guard.note}</code>`;\nreturn [{ json: { ...rest, guard, form_html: rest.ok ? badge + rest.verdict_form_html : '' } }];\n"
+      },
+      "id": "a5e528a1-3d18-4455-8807-b53ba7774ac3",
+      "name": "Guard: Cross-check",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1320,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "40d77033-8b93-4d45-a297-5f04f95b041d",
+              "leftValue": "={{ $json.ok === true }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "id": "f96f21c9-26e0-4d5a-950c-df5ac9dd1d57",
+      "name": "Verified?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1540,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "formFields": {
+          "values": [
+            {
+              "fieldType": "html",
+              "elementName": "problem",
+              "html": "={{ '<h3>We need your help with this invoice</h3><code>' + (($json.error && $json.error.message) || 'Unknown error').replace(/</g,'&lt;') + '</code><p>The boxes below show what the AI read from the PDF. Correct anything wrong, fill anything missing, then re-run the audit. The engine does all the maths.</p>' }}"
+            },
+            {
+              "fieldLabel": "Carrier",
+              "fieldType": "text",
+              "defaultValue": "={{ ($('AI: Read Invoice').first().json.output || {}).carrier ?? '' }}"
+            },
+            {
+              "fieldLabel": "Invoice number",
+              "fieldType": "text",
+              "defaultValue": "={{ ($('AI: Read Invoice').first().json.output || {}).invoice_number ?? '' }}"
+            },
+            {
+              "fieldLabel": "Container number",
+              "fieldType": "text",
+              "defaultValue": "={{ ($('AI: Read Invoice').first().json.output || {}).container_id ?? '' }}",
+              "placeholder": "e.g. OLCU4821937"
+            },
+            {
+              "fieldLabel": "Invoice date",
+              "fieldType": "date",
+              "defaultValue": "={{ ($('AI: Read Invoice').first().json.output || {}).invoice_date ?? '' }}"
+            },
+            {
+              "fieldLabel": "Charge start",
+              "fieldType": "date",
+              "defaultValue": "={{ ($('AI: Read Invoice').first().json.output || {}).charge_start ?? '' }}"
+            },
+            {
+              "fieldLabel": "Charge end",
+              "fieldType": "date",
+              "defaultValue": "={{ ($('AI: Read Invoice').first().json.output || {}).charge_end ?? '' }}"
+            },
+            {
+              "fieldLabel": "Billed days",
+              "fieldType": "number",
+              "defaultValue": "={{ ($('AI: Read Invoice').first().json.output || {}).billed_days ?? '' }}"
+            },
+            {
+              "fieldLabel": "Rate per day",
+              "fieldType": "number",
+              "defaultValue": "={{ ($('AI: Read Invoice').first().json.output || {}).rate_per_day ?? '' }}"
+            },
+            {
+              "fieldLabel": "Total amount",
+              "fieldType": "number",
+              "defaultValue": "={{ ($('AI: Read Invoice').first().json.output || {}).total_amount ?? '' }}"
+            }
+          ]
+        },
+        "options": {
+          "formTitle": "Check the invoice details",
+          "buttonLabel": "Re-run audit",
+          "customCss": ":root{--container-width:720px}\ndiv.html table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0 4px}\ndiv.html th{text-align:left;border-bottom:2px solid #9ca3af;padding:5px 6px;color:#374151}\ndiv.html td{padding:5px 6px;border-bottom:1px solid #e5e7eb;vertical-align:top;color:#374151}\ndiv.html tbody tr:nth-child(even) td{background:#f9fafb}\ndiv.html td b{color:#b45309}\ndiv.html td u{color:#15803d;text-decoration:none;font-weight:600}\ndiv.html td i{color:#6b7280;font-weight:600}\ndiv.html td em{color:#b91c1c;font-weight:700;font-style:normal}\ndiv.html h2{color:#b91c1c;font-size:26px;margin:4px 0 6px}\ndiv.html h3{color:#15803d;font-size:26px;margin:4px 0 6px}\ndiv.html h4{color:#1e3a8a;margin:16px 0 4px;font-size:15px}\ndiv.html p strong{display:inline-block;background:#fff4dc;color:#8a5a00;padding:3px 10px;border-radius:999px}\ndiv.html code{display:block;font-family:inherit;font-size:12px;background:#eef3fd;color:#1e3a8a;padding:6px 10px;border-radius:6px;margin-bottom:8px}\ndiv.html pre{white-space:pre-wrap;font-family:inherit;background:#f8f8f8;padding:12px;border-radius:8px}\n"
+        }
+      },
+      "id": "5445d1df-6c9b-4764-96c8-2ba44a1e80c8",
+      "name": "Human: Fix Details",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        520
+      ],
+      "webhookId": "f5681987-b69f-4354-8e7f-cb4340867d86"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Merge the human's corrections over what the AI extracted.\nconst ai = $('AI: Read Invoice').first().json.output || {};\nconst f = $json;\nconst pick = (label) => (f[label] === undefined || f[label] === null || String(f[label]).trim() === '') ? undefined : f[label];\nconst fixed = { ...ai };\nconst map = { 'Carrier': 'carrier', 'Invoice number': 'invoice_number', 'Container number': 'container_id', 'Invoice date': 'invoice_date',\n  'Charge start': 'charge_start', 'Charge end': 'charge_end', 'Billed days': 'billed_days',\n  'Rate per day': 'rate_per_day', 'Total amount': 'total_amount' };\nfor (const [label, key] of Object.entries(map)) { const v = pick(label); if (v !== undefined) fixed[key] = v; }\nreturn [{ json: { invoice: fixed, as_of_date: $('Config').first().json.as_of_date } }];\n"
+      },
+      "id": "5ce37009-3c1e-49fe-9595-37fc9dfaba53",
+      "name": "Apply Fixes",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1980,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Config').first().json.engine_url }}/audit",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "timeout": 20000
+        }
+      },
+      "id": "5c4189c8-7886-4741-96bd-7113e4bdc3a7",
+      "name": "Engine: Re-audit",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2200,
+        520
+      ],
+      "onError": "continueRegularOutput",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 2000
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "3e5bf2e9-8977-4c15-bf41-be1c168d8cf9",
+              "leftValue": "={{ $json.ok === true }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "id": "c1a9aa14-2f4a-41f9-8570-64803108b03e",
+      "name": "Re-verified?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2420,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "completionTitle": "Could not verify this invoice",
+        "completionMessage": "={{ (($json.error && $json.error.message) || 'The audit engine is unavailable.') + ' Do not pay yet: forward the invoice to the logistics team for a manual check.' }}",
+        "options": {
+          "customCss": ":root{--container-width:720px}\ndiv.html table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0 4px}\ndiv.html th{text-align:left;border-bottom:2px solid #9ca3af;padding:5px 6px;color:#374151}\ndiv.html td{padding:5px 6px;border-bottom:1px solid #e5e7eb;vertical-align:top;color:#374151}\ndiv.html tbody tr:nth-child(even) td{background:#f9fafb}\ndiv.html td b{color:#b45309}\ndiv.html td u{color:#15803d;text-decoration:none;font-weight:600}\ndiv.html td i{color:#6b7280;font-weight:600}\ndiv.html td em{color:#b91c1c;font-weight:700;font-style:normal}\ndiv.html h2{color:#b91c1c;font-size:26px;margin:4px 0 6px}\ndiv.html h3{color:#15803d;font-size:26px;margin:4px 0 6px}\ndiv.html h4{color:#1e3a8a;margin:16px 0 4px;font-size:15px}\ndiv.html p strong{display:inline-block;background:#fff4dc;color:#8a5a00;padding:3px 10px;border-radius:999px}\ndiv.html code{display:block;font-family:inherit;font-size:12px;background:#eef3fd;color:#1e3a8a;padding:6px 10px;border-radius:6px;margin-bottom:8px}\ndiv.html pre{white-space:pre-wrap;font-family:inherit;background:#f8f8f8;padding:12px;border-radius:8px}\n"
+        }
+      },
+      "id": "3494a1e9-396e-4fac-b816-c5148c44b1f3",
+      "name": "Cannot Verify",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 1,
+      "position": [
+        2640,
+        720
+      ],
+      "webhookId": "81c7be70-59b7-4cac-9988-eb88157dc8b2"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Single place the verified audit lives, whichever path it came from.\nconst r = $json;\nif (!r.guard) {\n  r.guard = { status: 'human_corrected', note: 'Audited after human corrections to the extracted fields.' };\n  r.form_html = `<code>i ${r.guard.note}</code>` + r.verdict_form_html;\n}\nreturn [{ json: r }];\n"
+      },
+      "id": "8b745754-c4cb-4df9-adaa-a15e5c775806",
+      "name": "Verdict Ready",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2640,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "formFields": {
+          "values": [
+            {
+              "fieldType": "html",
+              "elementName": "verdict",
+              "html": "={{ $json.form_html }}"
+            },
+            {
+              "fieldLabel": "Decision",
+              "fieldType": "dropdown",
+              "requiredField": true,
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Pay invoice"
+                  },
+                  {
+                    "option": "Dispute in full"
+                  },
+                  {
+                    "option": "Partial dispute"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "Partial amount (USD)",
+              "fieldType": "number",
+              "placeholder": "Only for a partial dispute: the amount you want credited"
+            },
+            {
+              "fieldLabel": "Reason",
+              "fieldType": "textarea",
+              "requiredField": true,
+              "placeholder": "Why? e.g. key partner, our trucker was also late on the last day"
+            }
+          ]
+        },
+        "options": {
+          "formTitle": "Verdict: your call",
+          "buttonLabel": "Submit decision",
+          "customCss": ":root{--container-width:720px}\ndiv.html table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0 4px}\ndiv.html th{text-align:left;border-bottom:2px solid #9ca3af;padding:5px 6px;color:#374151}\ndiv.html td{padding:5px 6px;border-bottom:1px solid #e5e7eb;vertical-align:top;color:#374151}\ndiv.html tbody tr:nth-child(even) td{background:#f9fafb}\ndiv.html td b{color:#b45309}\ndiv.html td u{color:#15803d;text-decoration:none;font-weight:600}\ndiv.html td i{color:#6b7280;font-weight:600}\ndiv.html td em{color:#b91c1c;font-weight:700;font-style:normal}\ndiv.html h2{color:#b91c1c;font-size:26px;margin:4px 0 6px}\ndiv.html h3{color:#15803d;font-size:26px;margin:4px 0 6px}\ndiv.html h4{color:#1e3a8a;margin:16px 0 4px;font-size:15px}\ndiv.html p strong{display:inline-block;background:#fff4dc;color:#8a5a00;padding:3px 10px;border-radius:999px}\ndiv.html code{display:block;font-family:inherit;font-size:12px;background:#eef3fd;color:#1e3a8a;padding:6px 10px;border-radius:6px;margin-bottom:8px}\ndiv.html pre{white-space:pre-wrap;font-family:inherit;background:#f8f8f8;padding:12px;border-radius:8px}\n"
+        }
+      },
+      "id": "80544b48-b133-4411-8d83-b9a48c5fece7",
+      "name": "Human: Decide",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 1,
+      "position": [
+        2860,
+        300
+      ],
+      "webhookId": "7e444247-f7e3-41e3-b6a1-a77df64943e0",
+      "notes": "HUMAN GATE 1: the business decision the AI cannot make."
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "1cd4f89e-557c-4ce7-b899-27714872dc3f",
+                    "leftValue": "={{ $json.Decision }}",
+                    "rightValue": "Pay invoice",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Pay"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "857eed15-efa9-453d-a092-e3f755f52407",
+                    "leftValue": "={{ $json.Decision }}",
+                    "rightValue": "Dispute in full",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Dispute in full"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "d6b5e999-bce4-478d-9faa-f7efa1037ff0",
+                    "leftValue": "={{ $json.Decision }}",
+                    "rightValue": "Partial dispute",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Partial"
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "id": "c04ead9f-bc74-4797-92b7-94c8404ac127",
+      "name": "Route Decision",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        3080,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Config').first().json.engine_url }}/decisions",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ invoice_number: $('Verdict Ready').first().json.invoice.invoice_number, container_id: $('Verdict Ready').first().json.invoice.container_id, carrier: $('Verdict Ready').first().json.contract.name, ai_recommendation: $('Verdict Ready').first().json.recommendation, human_decision: $('Human: Decide').first().json.Decision, reason: $('Human: Decide').first().json.Reason, billed_amount: $('Verdict Ready').first().json.billed_amount, correct_amount: $('Verdict Ready').first().json.correct_amount, disputed_amount: 0, letter_source: null }) }}",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "318bcd1c-0e67-41cb-ad14-a976a407b8eb",
+      "name": "Log: Pay",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3300,
+        120
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "completionTitle": "Payment approved",
+        "completionMessage": "={{ 'Invoice ' + ($('Verdict Ready').first().json.invoice.invoice_number || '') + ' approved for payment: $' + $('Verdict Ready').first().json.billed_amount + '. Your decision is logged in the audit trail.' }}",
+        "options": {
+          "customCss": ":root{--container-width:720px}\ndiv.html table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0 4px}\ndiv.html th{text-align:left;border-bottom:2px solid #9ca3af;padding:5px 6px;color:#374151}\ndiv.html td{padding:5px 6px;border-bottom:1px solid #e5e7eb;vertical-align:top;color:#374151}\ndiv.html tbody tr:nth-child(even) td{background:#f9fafb}\ndiv.html td b{color:#b45309}\ndiv.html td u{color:#15803d;text-decoration:none;font-weight:600}\ndiv.html td i{color:#6b7280;font-weight:600}\ndiv.html td em{color:#b91c1c;font-weight:700;font-style:normal}\ndiv.html h2{color:#b91c1c;font-size:26px;margin:4px 0 6px}\ndiv.html h3{color:#15803d;font-size:26px;margin:4px 0 6px}\ndiv.html h4{color:#1e3a8a;margin:16px 0 4px;font-size:15px}\ndiv.html p strong{display:inline-block;background:#fff4dc;color:#8a5a00;padding:3px 10px;border-radius:999px}\ndiv.html code{display:block;font-family:inherit;font-size:12px;background:#eef3fd;color:#1e3a8a;padding:6px 10px;border-radius:6px;margin-bottom:8px}\ndiv.html pre{white-space:pre-wrap;font-family:inherit;background:#f8f8f8;padding:12px;border-radius:8px}\n"
+        }
+      },
+      "id": "9bcb387b-b8a3-4085-bcf3-cbfd2ee32d87",
+      "name": "Payment Approved",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 1,
+      "position": [
+        3520,
+        120
+      ],
+      "webhookId": "bcc49331-f3c0-4a2f-b375-cf3c71da81d1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Config').first().json.engine_url }}/letter",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ invoice: $('Verdict Ready').first().json.invoice, as_of_date: $('Config').first().json.as_of_date, decision: $json.Decision, disputed_amount: $json['Partial amount (USD)'], reason: $json.Reason }) }}",
+        "options": {
+          "timeout": 20000
+        }
+      },
+      "id": "1cb246ff-234d-4977-a0ad-4cf26db8d136",
+      "name": "Engine: Letter Facts",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3300,
+        400
+      ],
+      "onError": "continueRegularOutput",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 2000
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You write dispute letters for a logistics manager. Write a clear, professional email to the carrier's billing team.\n\nRULES:\n- Use ONLY the facts below. Do not add any number, amount or date that is not in FACTS.\n- decision 'partial' = warm, relationship-first tone; we pay part and ask for a credit of disputed_amount_text.\n- decision 'dispute_full' = firm, factual tone; we dispute disputed_amount_text.\n- If fmc_valid is false, state that the invoice was issued outside the FMC 30-day billing window.\n- Mention the manager's reason only if it helps the relationship; never admit fault beyond it.\n- Sign as Sara Malik, Logistics Manager, Northwind Imports Inc.\n- Output only the email: a Subject line, then the body. No commentary.\n\nFACTS:\n{{ JSON.stringify($json.facts, null, 2) }}\n\nReference structure (you may improve wording, not facts):\n{{ $json.template_letter }}"
+      },
+      "id": "b77ba637-e09c-4887-8ea4-b595f73f5f44",
+      "name": "AI: Draft Letter",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        3520,
+        400
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {
+          "temperature": 0
+        }
+      },
+      "id": "7364af5b-fbf5-4fff-8b0b-b12c5007db3e",
+      "name": "Groq (letter)",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        3520,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Config').first().json.engine_url }}/letter/check",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ invoice: $('Verdict Ready').first().json.invoice, as_of_date: $('Config').first().json.as_of_date, decision: $('Human: Decide').first().json.Decision, disputed_amount: $('Human: Decide').first().json['Partial amount (USD)'], reason: $('Human: Decide').first().json.Reason, letter: $json.text || '' }) }}",
+        "options": {
+          "timeout": 20000
+        }
+      },
+      "id": "bbe3e048-33ed-47a8-af4c-4200399d446b",
+      "name": "Engine: Check Letter",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3740,
+        400
+      ],
+      "onError": "continueRegularOutput",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 2000,
+      "notes": "Letter guard: any money amount the engine did not produce -> fall back to the verified template."
+    },
+    {
+      "parameters": {
+        "formFields": {
+          "values": [
+            {
+              "fieldType": "html",
+              "elementName": "letter_check",
+              "html": "={{ '<code>' + ($json.source === 'ai_draft' ? '\\u2713 ' : '! ') + ($json.guard_note || '') + '</code><p>Edit the letter below if you want. Nothing is sent until you approve it.</p>' }}"
+            },
+            {
+              "fieldLabel": "Final letter",
+              "fieldType": "textarea",
+              "requiredField": true,
+              "defaultValue": "={{ $json.final_letter }}"
+            }
+          ]
+        },
+        "options": {
+          "formTitle": "Review and sign off the dispute letter",
+          "buttonLabel": "Approve letter",
+          "customCss": ":root{--container-width:720px}\ndiv.html table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0 4px}\ndiv.html th{text-align:left;border-bottom:2px solid #9ca3af;padding:5px 6px;color:#374151}\ndiv.html td{padding:5px 6px;border-bottom:1px solid #e5e7eb;vertical-align:top;color:#374151}\ndiv.html tbody tr:nth-child(even) td{background:#f9fafb}\ndiv.html td b{color:#b45309}\ndiv.html td u{color:#15803d;text-decoration:none;font-weight:600}\ndiv.html td i{color:#6b7280;font-weight:600}\ndiv.html td em{color:#b91c1c;font-weight:700;font-style:normal}\ndiv.html h2{color:#b91c1c;font-size:26px;margin:4px 0 6px}\ndiv.html h3{color:#15803d;font-size:26px;margin:4px 0 6px}\ndiv.html h4{color:#1e3a8a;margin:16px 0 4px;font-size:15px}\ndiv.html p strong{display:inline-block;background:#fff4dc;color:#8a5a00;padding:3px 10px;border-radius:999px}\ndiv.html code{display:block;font-family:inherit;font-size:12px;background:#eef3fd;color:#1e3a8a;padding:6px 10px;border-radius:6px;margin-bottom:8px}\ndiv.html pre{white-space:pre-wrap;font-family:inherit;background:#f8f8f8;padding:12px;border-radius:8px}\ntextarea{min-height:420px}"
+        }
+      },
+      "id": "543aac8a-d6d4-47f5-8a15-f53becf8ccf9",
+      "name": "Human: Review Letter",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 1,
+      "position": [
+        3960,
+        400
+      ],
+      "webhookId": "62c8d1ca-8aef-422e-b89b-0f87d30b0ffd",
+      "notes": "HUMAN GATE 2: nothing leaves without a human sign-off."
+    },
+    {
+      "parameters": {
+        "jsCode": "const chk = $('Engine: Check Letter').first().json;\nconst norm = (t) => String(t || '').replace(/\\r/g, '').trim();\nconst approved = norm($json['Final letter']) || norm(chk.final_letter);\nconst edited = approved !== norm(chk.final_letter);\nreturn [{ json: {\n  final_letter: approved,\n  letter_source: edited ? 'human_edited' : chk.source,\n  disputed_amount: chk.facts ? chk.facts.disputed_amount : null,\n} }];\n"
+      },
+      "id": "5d94d67f-ca93-444f-9f2a-cfe6b88b5e10",
+      "name": "Finalize Letter",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4180,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Config').first().json.engine_url }}/decisions",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ invoice_number: $('Verdict Ready').first().json.invoice.invoice_number, container_id: $('Verdict Ready').first().json.invoice.container_id, carrier: $('Verdict Ready').first().json.contract.name, ai_recommendation: $('Verdict Ready').first().json.recommendation, human_decision: $('Human: Decide').first().json.Decision, reason: $('Human: Decide').first().json.Reason, billed_amount: $('Verdict Ready').first().json.billed_amount, correct_amount: $('Verdict Ready').first().json.correct_amount, disputed_amount: $json.disputed_amount, letter_source: $json.letter_source }) }}",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "6ae4641b-6070-4f8f-aeb0-387a3989a3f7",
+      "name": "Log: Dispute",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4400,
+        400
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "completionTitle": "Dispute letter approved",
+        "completionMessage": "={{ 'Approved by you and logged in the audit trail. Final letter:\\n\\n' + $('Finalize Letter').first().json.final_letter }}",
+        "options": {
+          "customCss": ":root{--container-width:720px}\ndiv.html table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0 4px}\ndiv.html th{text-align:left;border-bottom:2px solid #9ca3af;padding:5px 6px;color:#374151}\ndiv.html td{padding:5px 6px;border-bottom:1px solid #e5e7eb;vertical-align:top;color:#374151}\ndiv.html tbody tr:nth-child(even) td{background:#f9fafb}\ndiv.html td b{color:#b45309}\ndiv.html td u{color:#15803d;text-decoration:none;font-weight:600}\ndiv.html td i{color:#6b7280;font-weight:600}\ndiv.html td em{color:#b91c1c;font-weight:700;font-style:normal}\ndiv.html h2{color:#b91c1c;font-size:26px;margin:4px 0 6px}\ndiv.html h3{color:#15803d;font-size:26px;margin:4px 0 6px}\ndiv.html h4{color:#1e3a8a;margin:16px 0 4px;font-size:15px}\ndiv.html p strong{display:inline-block;background:#fff4dc;color:#8a5a00;padding:3px 10px;border-radius:999px}\ndiv.html code{display:block;font-family:inherit;font-size:12px;background:#eef3fd;color:#1e3a8a;padding:6px 10px;border-radius:6px;margin-bottom:8px}\ndiv.html pre{white-space:pre-wrap;font-family:inherit;background:#f8f8f8;padding:12px;border-radius:8px}\n"
+        }
+      },
+      "id": "851ea46d-ab38-4192-90e6-0e4240d71bfa",
+      "name": "Done",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 1,
+      "position": [
+        4620,
+        400
+      ],
+      "webhookId": "3afb308a-3ea6-495c-b98f-bd7a2d1e46fe"
+    },
+    {
+      "parameters": {
+        "content": "## DemurrageGuard\n**AI reads** (PDF extraction) -> **code computes** (engine via REST + MCP, guard cross-checks them) -> **human decides** (pay / dispute / partial) -> **AI drafts** letter -> **code checks** every amount -> **human approves**.\n\nAll numbers come from the engine, never the LLM.",
+        "height": 200,
+        "width": 520,
+        "color": 4
+      },
+      "id": "9fbdbaf8-e0a0-48d8-b2ba-1ea8cb243ceb",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Groq (extract)": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI: Read Invoice",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq (agent)": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent: Verify via MCP",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP: DemurrageGuard Engine": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent: Verify via MCP",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq (letter)": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI: Draft Letter",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Invoice": {
+      "main": [
+        [
+          {
+            "node": "Read PDF Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read PDF Text": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "AI: Read Invoice",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI: Read Invoice": {
+      "main": [
+        [
+          {
+            "node": "Engine: Audit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Engine: Audit": {
+      "main": [
+        [
+          {
+            "node": "AI Agent: Verify via MCP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent: Verify via MCP": {
+      "main": [
+        [
+          {
+            "node": "Guard: Cross-check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guard: Cross-check": {
+      "main": [
+        [
+          {
+            "node": "Verified?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Human: Fix Details": {
+      "main": [
+        [
+          {
+            "node": "Apply Fixes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apply Fixes": {
+      "main": [
+        [
+          {
+            "node": "Engine: Re-audit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Engine: Re-audit": {
+      "main": [
+        [
+          {
+            "node": "Re-verified?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verdict Ready": {
+      "main": [
+        [
+          {
+            "node": "Human: Decide",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Human: Decide": {
+      "main": [
+        [
+          {
+            "node": "Route Decision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log: Pay": {
+      "main": [
+        [
+          {
+            "node": "Payment Approved",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Engine: Letter Facts": {
+      "main": [
+        [
+          {
+            "node": "AI: Draft Letter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI: Draft Letter": {
+      "main": [
+        [
+          {
+            "node": "Engine: Check Letter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Engine: Check Letter": {
+      "main": [
+        [
+          {
+            "node": "Human: Review Letter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Human: Review Letter": {
+      "main": [
+        [
+          {
+            "node": "Finalize Letter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Finalize Letter": {
+      "main": [
+        [
+          {
+            "node": "Log: Dispute",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log: Dispute": {
+      "main": [
+        [
+          {
+            "node": "Done",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verified?": {
+      "main": [
+        [
+          {
+            "node": "Verdict Ready",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Human: Fix Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Re-verified?": {
+      "main": [
+        [
+          {
+            "node": "Verdict Ready",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Cannot Verify",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Decision": {
+      "main": [
+        [
+          {
+            "node": "Log: Pay",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Engine: Letter Facts",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Engine: Letter Facts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "active": false,
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}

@@ -1,0 +1,31 @@
+{
+  "_note": "Fictional carriers and contracts for demo purposes only.",
+  "carriers": {
+    "OCEANIC_LINE": {
+      "name": "Oceanic Line",
+      "aliases": ["oceanic line", "oceanic line ltd", "oceanic line shipping", "oceanic shipping line", "ocl"],
+      "contract_id": "OCL-2026-SC-0417",
+      "port": "USLAX",
+      "port_name": "Port of Los Angeles, CA",
+      "charge_type": "Import demurrage",
+      "free_days": 5,
+      "free_time_counts": "working_days",
+      "excluded_days": ["weekends", "public_holidays", "port_closures"],
+      "rate_per_day": 175,
+      "currency": "USD"
+    },
+    "PACIFIC_STAR": {
+      "name": "Pacific Star Lines",
+      "aliases": ["pacific star", "pacific star lines", "psl"],
+      "contract_id": "PSL-2026-SC-0088",
+      "port": "USLGB",
+      "port_name": "Port of Long Beach, CA",
+      "charge_type": "Import demurrage",
+      "free_days": 4,
+      "free_time_counts": "working_days",
+      "excluded_days": ["weekends", "public_holidays", "port_closures"],
+      "rate_per_day": 150,
+      "currency": "USD"
+    }
+  }
+}

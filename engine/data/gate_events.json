@@ -1,0 +1,37 @@
+{
+  "_note": "Terminal gate records (fictional). Source of truth for when a container was discharged and when it left the terminal.",
+  "containers": {
+    "OLCU4821937": {
+      "carrier": "OCEANIC_LINE",
+      "port": "USLAX",
+      "vessel": "OCEANIC HORIZON V.214E",
+      "discharge_date": "2026-09-01",
+      "gate_out_date": "2026-09-14",
+      "consignee": "Northwind Imports Inc."
+    },
+    "OLCU5530128": {
+      "carrier": "OCEANIC_LINE",
+      "port": "USLAX",
+      "vessel": "OCEANIC MERIDIAN V.031E",
+      "discharge_date": "2026-09-14",
+      "gate_out_date": "2026-09-25",
+      "consignee": "Northwind Imports Inc."
+    },
+    "OLCU7719402": {
+      "carrier": "OCEANIC_LINE",
+      "port": "USLAX",
+      "vessel": "OCEANIC HORIZON V.209E",
+      "discharge_date": "2026-07-06",
+      "gate_out_date": "2026-07-15",
+      "consignee": "Northwind Imports Inc."
+    },
+    "PSLU3308815": {
+      "carrier": "PACIFIC_STAR",
+      "port": "USLGB",
+      "vessel": "PACIFIC STAR AURORA V.77",
+      "discharge_date": "2026-06-15",
+      "gate_out_date": "2026-06-24",
+      "consignee": "Northwind Imports Inc."
+    }
+  }
+}

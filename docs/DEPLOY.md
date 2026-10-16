@@ -94,8 +94,7 @@ Open http://localhost:8000 and http://localhost:8000/demo/A. Ctrl+C to stop.
 3. **Workflows** -> **Create** -> top-right `...` menu -> **Import from File** -> choose
    `n8n/demurrage-guard.json` from the repo.
 4. Open each of the 3 Groq nodes (`Groq (extract)`, `Groq (agent)`, `Groq (letter)`) -> pick the Groq
-   credential. Model: `llama-3.3-70b-versatile`. If it is not in the list, pick the newest large Llama
-   or `openai/gpt-oss-120b` model available.
+   credential. Model: `openai/gpt-oss-120b` (Groq retired the Llama 3.3 model in Aug 2026).
 5. Only if your engine name is NOT `demurrage-engine`: edit the `Config` node (`engine_url`) and the
    `MCP: DemurrageGuard Engine` node (URL ending in `/mcp`).
 6. Any node with a red warning triangle: open it, re-select the highlighted option, close it. (Node

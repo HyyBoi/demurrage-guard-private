@@ -1,0 +1,28 @@
+# Plan B: builds the engine image on every push and publishes it to GitHub Container Registry.
+# Use only if the Alternate Clouds GitHub option is not available:
+# deploy the Docker image ghcr.io/hyyboi/demurrage-guard:1.0.<run number> with port 8000.
+# After the first run, make the package public: GitHub profile > Packages > demurrage-guard >
+# Package settings > Change visibility > Public.
+name: docker-image
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  packages: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/hyyboi/demurrage-guard:1.0.${{ github.run_number }}

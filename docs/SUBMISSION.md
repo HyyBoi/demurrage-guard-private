@@ -21,10 +21,10 @@ Fill the blanks, export to PDF, open every link from a logged-out private window
   before it is sent. If the AI cannot read the PDF, the human also corrects the extracted fields. Every
   decision, including overrides of the AI recommendation, is logged.
 - **Built with:** n8n (form, AI extraction, AI agent, human approval steps), custom Python engine
-  (FastAPI) exposed as REST and as an MCP server, Groq (Llama) models, deployed on Alternate Clouds.
+  (FastAPI) exposed as REST and as an MCP server, Groq (openai/gpt-oss-120b), deployed on Alternate Clouds.
 
 ## 3. Links
-- Live app (n8n form): https://demurrage-n8n-app.alternatefutures.ai/form/____
+- Live app (n8n form): https://demurrage-n8n-app.alternatefutures.ai/form/11e0b587-7469-4435-8a19-2756043418b3
 - Engine (verdicts, decision log, MCP): https://demurrage-engine-app.alternatefutures.ai
 - GitHub: https://github.com/HyyBoi/demurrage-guard (workflow JSON in `n8n/`)
 - Demo video: ____ (unlisted YouTube or Drive "anyone with the link")

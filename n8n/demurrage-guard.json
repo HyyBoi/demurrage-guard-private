@@ -22,7 +22,7 @@
           "customCss": ":root{--container-width:720px}\ndiv.html table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0 4px}\ndiv.html th{text-align:left;border-bottom:2px solid #9ca3af;padding:5px 6px;color:#374151}\ndiv.html td{padding:5px 6px;border-bottom:1px solid #e5e7eb;vertical-align:top;color:#374151}\ndiv.html tbody tr:nth-child(even) td{background:#f9fafb}\ndiv.html td b{color:#b45309}\ndiv.html td u{color:#15803d;text-decoration:none;font-weight:600}\ndiv.html td i{color:#6b7280;font-weight:600}\ndiv.html td em{color:#b91c1c;font-weight:700;font-style:normal}\ndiv.html h2{color:#b91c1c;font-size:26px;margin:4px 0 6px}\ndiv.html h3{color:#15803d;font-size:26px;margin:4px 0 6px}\ndiv.html h4{color:#1e3a8a;margin:16px 0 4px;font-size:15px}\ndiv.html p strong{display:inline-block;background:#fff4dc;color:#8a5a00;padding:3px 10px;border-radius:999px}\ndiv.html code{display:block;font-family:inherit;font-size:12px;background:#eef3fd;color:#1e3a8a;padding:6px 10px;border-radius:6px;margin-bottom:8px}\ndiv.html pre{white-space:pre-wrap;font-family:inherit;background:#f8f8f8;padding:12px;border-radius:8px}\n"
         }
       },
-      "id": "38bbe011-7863-4d17-b45f-1f274a2a26e3",
+      "id": "604530ac-a2a6-44d0-8287-4bb1bd98b7a4",
       "name": "Upload Invoice",
       "type": "n8n-nodes-base.formTrigger",
       "typeVersion": 2.2,
@@ -30,7 +30,7 @@
         0,
         300
       ],
-      "webhookId": "96e9650d-5992-474c-8f19-b6113e654554"
+      "webhookId": "11e0b587-7469-4435-8a19-2756043418b3"
     },
     {
       "parameters": {
@@ -38,7 +38,7 @@
         "binaryPropertyName": "={{ Object.keys($binary || {})[0] || 'Invoice_PDF' }}",
         "options": {}
       },
-      "id": "00044e14-4289-4eed-8ce9-53f5c4b4cb92",
+      "id": "637a6243-efa5-4e15-a512-6ec0fb946222",
       "name": "Read PDF Text",
       "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1,
@@ -53,19 +53,19 @@
         "assignments": {
           "assignments": [
             {
-              "id": "51db47c1-6d27-43c8-8685-ed01200b6d12",
+              "id": "d0457be6-1c83-4c85-89cb-8c77aff1a768",
               "name": "engine_url",
               "value": "https://demurrage-engine-app.alternatefutures.ai",
               "type": "string"
             },
             {
-              "id": "5698857a-95fe-4c34-9a23-99c1a8dd8703",
+              "id": "bf0a8a1a-3dc5-4281-b0fb-7e604d3fba27",
               "name": "as_of_date",
               "value": "",
               "type": "string"
             },
             {
-              "id": "7328bb6f-429b-4424-ad75-526b917f5176",
+              "id": "09c960c9-071c-4e2e-85dd-1da3dd585ec8",
               "name": "pdf_text",
               "value": "={{ ($json.text || '').slice(0, 12000) }}",
               "type": "string"
@@ -75,7 +75,7 @@
         "includeOtherFields": false,
         "options": {}
       },
-      "id": "147d385f-5e80-46d5-8348-5dca69a1684e",
+      "id": "256020d5-3af1-4c19-a97d-0a44e42666fa",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -146,7 +146,7 @@
           "systemPromptTemplate": "You extract fields from an ocean-freight carrier demurrage/detention invoice. Copy values exactly as printed; do not calculate or infer anything. Dates must be YYYY-MM-DD. container_id is 4 letters + 7 digits with spaces and dashes removed. charge_start and charge_end are the first and last day of the billed charge period. Numbers without currency symbols or commas. If a field is not on the invoice, omit it. Never guess."
         }
       },
-      "id": "2a852716-9f28-476d-8fae-97b7aad78869",
+      "id": "71ab6109-6f33-46d2-8fb5-033c85dd986a",
       "name": "AI: Read Invoice",
       "type": "@n8n/n8n-nodes-langchain.informationExtractor",
       "typeVersion": 1,
@@ -158,12 +158,12 @@
     },
     {
       "parameters": {
-        "model": "llama-3.3-70b-versatile",
+        "model": "openai/gpt-oss-120b",
         "options": {
           "temperature": 0
         }
       },
-      "id": "3bb9207b-264e-4773-9474-5c2f2947b449",
+      "id": "23c9ae22-037d-4662-8a50-0cf4c231b859",
       "name": "Groq (extract)",
       "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
       "typeVersion": 1,
@@ -183,7 +183,7 @@
           "timeout": 20000
         }
       },
-      "id": "342d0255-af99-486d-803b-83c6f2325cba",
+      "id": "f8963157-bdd7-4b5b-b9a6-e4aa4e3de03e",
       "name": "Engine: Audit",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -206,7 +206,7 @@
           "maxIterations": 4
         }
       },
-      "id": "5cce0684-54d3-464d-86f8-401a8f333cfa",
+      "id": "67e94c4b-12eb-491a-acb4-955b21107734",
       "name": "AI Agent: Verify via MCP",
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 1.7,
@@ -218,12 +218,12 @@
     },
     {
       "parameters": {
-        "model": "llama-3.3-70b-versatile",
+        "model": "openai/gpt-oss-120b",
         "options": {
           "temperature": 0
         }
       },
-      "id": "34b61ec0-64b2-41b6-86fe-3bcd782421e0",
+      "id": "7e8a5b1a-7c5d-46e5-8820-2e3ce4db9eb3",
       "name": "Groq (agent)",
       "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
       "typeVersion": 1,
@@ -237,7 +237,7 @@
         "endpointUrl": "https://demurrage-engine-app.alternatefutures.ai/mcp",
         "serverTransport": "httpStreamable"
       },
-      "id": "738c928c-aef5-4617-9f3e-393596981d17",
+      "id": "61fd1581-b417-4e0d-9845-0e881f729e33",
       "name": "MCP: DemurrageGuard Engine",
       "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
       "typeVersion": 1.1,
@@ -251,7 +251,7 @@
       "parameters": {
         "jsCode": "// Guard: the AI agent (via MCP) and the REST engine must agree. Code is the source of truth.\nconst rest = $('Engine: Audit').first().json;\nconst raw = (typeof $json.output === 'string') ? $json.output : '';\nlet guard = { status: 'unavailable',\n  note: 'AI agent cross-check unavailable; showing the deterministic engine result.' };\nif (rest.ok && raw) {\n  try {\n    const m = raw.match(/\\{[\\s\\S]*\\}/);\n    const a = JSON.parse(m ? m[0] : raw);\n    const same = Number(a.overcharge) === Number(rest.overcharge)\n              && Number(a.correct_days) === Number(rest.correct_days);\n    guard = same\n      ? { status: 'match', note: `AI agent (via MCP) and engine agree: ${rest.correct_days} chargeable days, difference $${rest.overcharge}.` }\n      : { status: 'mismatch', note: `AI agent said overcharge ${a.overcharge}, engine says ${rest.overcharge}. Using the engine: code is the source of truth.` };\n  } catch (e) { /* keep 'unavailable' */ }\n}\nif (!rest.ok && !rest.error) {\n  rest.error = { code: 'ENGINE_UNREACHABLE', message: 'The audit engine did not respond. Check the engine service, or enter the details manually.' };\n}\nconst icon = { match: '\\u2713', mismatch: '!', unavailable: 'i' }[guard.status];\nconst badge = `<code>${icon} Cross-check: ${guard.note}</code>`;\nreturn [{ json: { ...rest, guard, form_html: rest.ok ? badge + rest.verdict_form_html : '' } }];\n"
       },
-      "id": "a5e528a1-3d18-4455-8807-b53ba7774ac3",
+      "id": "9165ddac-8dfe-43ca-b968-216a4333599d",
       "name": "Guard: Cross-check",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -271,7 +271,7 @@
           },
           "conditions": [
             {
-              "id": "40d77033-8b93-4d45-a297-5f04f95b041d",
+              "id": "ba8805d5-fb09-419e-a00d-0e8e537dbbda",
               "leftValue": "={{ $json.ok === true }}",
               "rightValue": "",
               "operator": {
@@ -286,7 +286,7 @@
         "looseTypeValidation": true,
         "options": {}
       },
-      "id": "f96f21c9-26e0-4d5a-950c-df5ac9dd1d57",
+      "id": "2a05638b-8020-487a-9754-c0c4467957d2",
       "name": "Verified?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
@@ -358,7 +358,7 @@
           "customCss": ":root{--container-width:720px}\ndiv.html table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0 4px}\ndiv.html th{text-align:left;border-bottom:2px solid #9ca3af;padding:5px 6px;color:#374151}\ndiv.html td{padding:5px 6px;border-bottom:1px solid #e5e7eb;vertical-align:top;color:#374151}\ndiv.html tbody tr:nth-child(even) td{background:#f9fafb}\ndiv.html td b{color:#b45309}\ndiv.html td u{color:#15803d;text-decoration:none;font-weight:600}\ndiv.html td i{color:#6b7280;font-weight:600}\ndiv.html td em{color:#b91c1c;font-weight:700;font-style:normal}\ndiv.html h2{color:#b91c1c;font-size:26px;margin:4px 0 6px}\ndiv.html h3{color:#15803d;font-size:26px;margin:4px 0 6px}\ndiv.html h4{color:#1e3a8a;margin:16px 0 4px;font-size:15px}\ndiv.html p strong{display:inline-block;background:#fff4dc;color:#8a5a00;padding:3px 10px;border-radius:999px}\ndiv.html code{display:block;font-family:inherit;font-size:12px;background:#eef3fd;color:#1e3a8a;padding:6px 10px;border-radius:6px;margin-bottom:8px}\ndiv.html pre{white-space:pre-wrap;font-family:inherit;background:#f8f8f8;padding:12px;border-radius:8px}\n"
         }
       },
-      "id": "5445d1df-6c9b-4764-96c8-2ba44a1e80c8",
+      "id": "4689c8db-2302-4375-abfa-42817ca0f5df",
       "name": "Human: Fix Details",
       "type": "n8n-nodes-base.form",
       "typeVersion": 1,
@@ -366,13 +366,13 @@
         1760,
         520
       ],
-      "webhookId": "f5681987-b69f-4354-8e7f-cb4340867d86"
+      "webhookId": "514067ca-dc22-486a-bb71-15113fe41aa8"
     },
     {
       "parameters": {
         "jsCode": "// Merge the human's corrections over what the AI extracted.\nconst ai = $('AI: Read Invoice').first().json.output || {};\nconst f = $json;\nconst pick = (label) => (f[label] === undefined || f[label] === null || String(f[label]).trim() === '') ? undefined : f[label];\nconst fixed = { ...ai };\nconst map = { 'Carrier': 'carrier', 'Invoice number': 'invoice_number', 'Container number': 'container_id', 'Invoice date': 'invoice_date',\n  'Charge start': 'charge_start', 'Charge end': 'charge_end', 'Billed days': 'billed_days',\n  'Rate per day': 'rate_per_day', 'Total amount': 'total_amount' };\nfor (const [label, key] of Object.entries(map)) { const v = pick(label); if (v !== undefined) fixed[key] = v; }\nreturn [{ json: { invoice: fixed, as_of_date: $('Config').first().json.as_of_date } }];\n"
       },
-      "id": "5ce37009-3c1e-49fe-9595-37fc9dfaba53",
+      "id": "1db7edde-1684-45a9-b5d0-a0bf9a9f37ef",
       "name": "Apply Fixes",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -392,7 +392,7 @@
           "timeout": 20000
         }
       },
-      "id": "5c4189c8-7886-4741-96bd-7113e4bdc3a7",
+      "id": "8a3830d0-439f-4a1c-bd58-4eb8610a1505",
       "name": "Engine: Re-audit",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -416,7 +416,7 @@
           },
           "conditions": [
             {
-              "id": "3e5bf2e9-8977-4c15-bf41-be1c168d8cf9",
+              "id": "56725815-0cfd-44b3-b0f7-e5da0cf7f069",
               "leftValue": "={{ $json.ok === true }}",
               "rightValue": "",
               "operator": {
@@ -431,7 +431,7 @@
         "looseTypeValidation": true,
         "options": {}
       },
-      "id": "c1a9aa14-2f4a-41f9-8570-64803108b03e",
+      "id": "0ccc4457-3679-4849-9c4b-7e3193911048",
       "name": "Re-verified?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
@@ -449,7 +449,7 @@
           "customCss": ":root{--container-width:720px}\ndiv.html table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0 4px}\ndiv.html th{text-align:left;border-bottom:2px solid #9ca3af;padding:5px 6px;color:#374151}\ndiv.html td{padding:5px 6px;border-bottom:1px solid #e5e7eb;vertical-align:top;color:#374151}\ndiv.html tbody tr:nth-child(even) td{background:#f9fafb}\ndiv.html td b{color:#b45309}\ndiv.html td u{color:#15803d;text-decoration:none;font-weight:600}\ndiv.html td i{color:#6b7280;font-weight:600}\ndiv.html td em{color:#b91c1c;font-weight:700;font-style:normal}\ndiv.html h2{color:#b91c1c;font-size:26px;margin:4px 0 6px}\ndiv.html h3{color:#15803d;font-size:26px;margin:4px 0 6px}\ndiv.html h4{color:#1e3a8a;margin:16px 0 4px;font-size:15px}\ndiv.html p strong{display:inline-block;background:#fff4dc;color:#8a5a00;padding:3px 10px;border-radius:999px}\ndiv.html code{display:block;font-family:inherit;font-size:12px;background:#eef3fd;color:#1e3a8a;padding:6px 10px;border-radius:6px;margin-bottom:8px}\ndiv.html pre{white-space:pre-wrap;font-family:inherit;background:#f8f8f8;padding:12px;border-radius:8px}\n"
         }
       },
-      "id": "3494a1e9-396e-4fac-b816-c5148c44b1f3",
+      "id": "f87a8c7b-f741-467c-89ab-390e4440fb5c",
       "name": "Cannot Verify",
       "type": "n8n-nodes-base.form",
       "typeVersion": 1,
@@ -457,13 +457,13 @@
         2640,
         720
       ],
-      "webhookId": "81c7be70-59b7-4cac-9988-eb88157dc8b2"
+      "webhookId": "1744c3de-8455-4069-8fa7-bff764561929"
     },
     {
       "parameters": {
         "jsCode": "// Single place the verified audit lives, whichever path it came from.\nconst r = $json;\nif (!r.guard) {\n  r.guard = { status: 'human_corrected', note: 'Audited after human corrections to the extracted fields.' };\n  r.form_html = `<code>i ${r.guard.note}</code>` + r.verdict_form_html;\n}\nreturn [{ json: r }];\n"
       },
-      "id": "8b745754-c4cb-4df9-adaa-a15e5c775806",
+      "id": "7f028078-ce9b-4865-a3f0-74fa430a4c1d",
       "name": "Verdict Ready",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -518,7 +518,7 @@
           "customCss": ":root{--container-width:720px}\ndiv.html table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0 4px}\ndiv.html th{text-align:left;border-bottom:2px solid #9ca3af;padding:5px 6px;color:#374151}\ndiv.html td{padding:5px 6px;border-bottom:1px solid #e5e7eb;vertical-align:top;color:#374151}\ndiv.html tbody tr:nth-child(even) td{background:#f9fafb}\ndiv.html td b{color:#b45309}\ndiv.html td u{color:#15803d;text-decoration:none;font-weight:600}\ndiv.html td i{color:#6b7280;font-weight:600}\ndiv.html td em{color:#b91c1c;font-weight:700;font-style:normal}\ndiv.html h2{color:#b91c1c;font-size:26px;margin:4px 0 6px}\ndiv.html h3{color:#15803d;font-size:26px;margin:4px 0 6px}\ndiv.html h4{color:#1e3a8a;margin:16px 0 4px;font-size:15px}\ndiv.html p strong{display:inline-block;background:#fff4dc;color:#8a5a00;padding:3px 10px;border-radius:999px}\ndiv.html code{display:block;font-family:inherit;font-size:12px;background:#eef3fd;color:#1e3a8a;padding:6px 10px;border-radius:6px;margin-bottom:8px}\ndiv.html pre{white-space:pre-wrap;font-family:inherit;background:#f8f8f8;padding:12px;border-radius:8px}\n"
         }
       },
-      "id": "80544b48-b133-4411-8d83-b9a48c5fece7",
+      "id": "59034401-7eaa-4dee-8593-e119a669a1ce",
       "name": "Human: Decide",
       "type": "n8n-nodes-base.form",
       "typeVersion": 1,
@@ -526,7 +526,7 @@
         2860,
         300
       ],
-      "webhookId": "7e444247-f7e3-41e3-b6a1-a77df64943e0",
+      "webhookId": "05dc2eee-63c6-4aee-b6f5-0dca62496b31",
       "notes": "HUMAN GATE 1: the business decision the AI cannot make."
     },
     {
@@ -543,7 +543,7 @@
                 },
                 "conditions": [
                   {
-                    "id": "1cd4f89e-557c-4ce7-b899-27714872dc3f",
+                    "id": "593b2eeb-a184-4170-bde6-fe2dc190ce33",
                     "leftValue": "={{ $json.Decision }}",
                     "rightValue": "Pay invoice",
                     "operator": {
@@ -567,7 +567,7 @@
                 },
                 "conditions": [
                   {
-                    "id": "857eed15-efa9-453d-a092-e3f755f52407",
+                    "id": "bd026796-7af6-43a7-b575-5ee8480dbbfe",
                     "leftValue": "={{ $json.Decision }}",
                     "rightValue": "Dispute in full",
                     "operator": {
@@ -591,7 +591,7 @@
                 },
                 "conditions": [
                   {
-                    "id": "d6b5e999-bce4-478d-9faa-f7efa1037ff0",
+                    "id": "85f62282-6c83-4c00-95c1-7d4b5d96ada4",
                     "leftValue": "={{ $json.Decision }}",
                     "rightValue": "Partial dispute",
                     "operator": {
@@ -610,7 +610,7 @@
         "looseTypeValidation": true,
         "options": {}
       },
-      "id": "c04ead9f-bc74-4797-92b7-94c8404ac127",
+      "id": "ddd38831-ea02-443f-9ad8-63dd5faac629",
       "name": "Route Decision",
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.2,
@@ -630,7 +630,7 @@
           "timeout": 10000
         }
       },
-      "id": "318bcd1c-0e67-41cb-ad14-a976a407b8eb",
+      "id": "e9449917-1f8a-469d-aae2-27fe27099d4e",
       "name": "Log: Pay",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -649,7 +649,7 @@
           "customCss": ":root{--container-width:720px}\ndiv.html table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0 4px}\ndiv.html th{text-align:left;border-bottom:2px solid #9ca3af;padding:5px 6px;color:#374151}\ndiv.html td{padding:5px 6px;border-bottom:1px solid #e5e7eb;vertical-align:top;color:#374151}\ndiv.html tbody tr:nth-child(even) td{background:#f9fafb}\ndiv.html td b{color:#b45309}\ndiv.html td u{color:#15803d;text-decoration:none;font-weight:600}\ndiv.html td i{color:#6b7280;font-weight:600}\ndiv.html td em{color:#b91c1c;font-weight:700;font-style:normal}\ndiv.html h2{color:#b91c1c;font-size:26px;margin:4px 0 6px}\ndiv.html h3{color:#15803d;font-size:26px;margin:4px 0 6px}\ndiv.html h4{color:#1e3a8a;margin:16px 0 4px;font-size:15px}\ndiv.html p strong{display:inline-block;background:#fff4dc;color:#8a5a00;padding:3px 10px;border-radius:999px}\ndiv.html code{display:block;font-family:inherit;font-size:12px;background:#eef3fd;color:#1e3a8a;padding:6px 10px;border-radius:6px;margin-bottom:8px}\ndiv.html pre{white-space:pre-wrap;font-family:inherit;background:#f8f8f8;padding:12px;border-radius:8px}\n"
         }
       },
-      "id": "9bcb387b-b8a3-4085-bcf3-cbfd2ee32d87",
+      "id": "0ba6b387-b816-4b04-a485-cb44b494f0d0",
       "name": "Payment Approved",
       "type": "n8n-nodes-base.form",
       "typeVersion": 1,
@@ -657,7 +657,7 @@
         3520,
         120
       ],
-      "webhookId": "bcc49331-f3c0-4a2f-b375-cf3c71da81d1"
+      "webhookId": "81ca38a0-3d0d-46a4-8d1c-2d58e804e25b"
     },
     {
       "parameters": {
@@ -670,7 +670,7 @@
           "timeout": 20000
         }
       },
-      "id": "1cb246ff-234d-4977-a0ad-4cf26db8d136",
+      "id": "22498196-0334-4a3a-9ff7-061ae37492b2",
       "name": "Engine: Letter Facts",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -688,7 +688,7 @@
         "promptType": "define",
         "text": "=You write dispute letters for a logistics manager. Write a clear, professional email to the carrier's billing team.\n\nRULES:\n- Use ONLY the facts below. Do not add any number, amount or date that is not in FACTS.\n- decision 'partial' = warm, relationship-first tone; we pay part and ask for a credit of disputed_amount_text.\n- decision 'dispute_full' = firm, factual tone; we dispute disputed_amount_text.\n- If fmc_valid is false, state that the invoice was issued outside the FMC 30-day billing window.\n- Mention the manager's reason only if it helps the relationship; never admit fault beyond it.\n- Sign as Sara Malik, Logistics Manager, Northwind Imports Inc.\n- Output only the email: a Subject line, then the body. No commentary.\n\nFACTS:\n{{ JSON.stringify($json.facts, null, 2) }}\n\nReference structure (you may improve wording, not facts):\n{{ $json.template_letter }}"
       },
-      "id": "b77ba637-e09c-4887-8ea4-b595f73f5f44",
+      "id": "a8c65e9e-dcd5-4b5b-9389-f8b2f245e7bc",
       "name": "AI: Draft Letter",
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.5,
@@ -700,12 +700,12 @@
     },
     {
       "parameters": {
-        "model": "llama-3.3-70b-versatile",
+        "model": "openai/gpt-oss-120b",
         "options": {
           "temperature": 0
         }
       },
-      "id": "7364af5b-fbf5-4fff-8b0b-b12c5007db3e",
+      "id": "7f48529b-6516-40a5-b76b-6e186b012731",
       "name": "Groq (letter)",
       "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
       "typeVersion": 1,
@@ -725,7 +725,7 @@
           "timeout": 20000
         }
       },
-      "id": "bbe3e048-33ed-47a8-af4c-4200399d446b",
+      "id": "48b4f215-db80-455c-9bcf-3520730f2d61",
       "name": "Engine: Check Letter",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -762,7 +762,7 @@
           "customCss": ":root{--container-width:720px}\ndiv.html table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0 4px}\ndiv.html th{text-align:left;border-bottom:2px solid #9ca3af;padding:5px 6px;color:#374151}\ndiv.html td{padding:5px 6px;border-bottom:1px solid #e5e7eb;vertical-align:top;color:#374151}\ndiv.html tbody tr:nth-child(even) td{background:#f9fafb}\ndiv.html td b{color:#b45309}\ndiv.html td u{color:#15803d;text-decoration:none;font-weight:600}\ndiv.html td i{color:#6b7280;font-weight:600}\ndiv.html td em{color:#b91c1c;font-weight:700;font-style:normal}\ndiv.html h2{color:#b91c1c;font-size:26px;margin:4px 0 6px}\ndiv.html h3{color:#15803d;font-size:26px;margin:4px 0 6px}\ndiv.html h4{color:#1e3a8a;margin:16px 0 4px;font-size:15px}\ndiv.html p strong{display:inline-block;background:#fff4dc;color:#8a5a00;padding:3px 10px;border-radius:999px}\ndiv.html code{display:block;font-family:inherit;font-size:12px;background:#eef3fd;color:#1e3a8a;padding:6px 10px;border-radius:6px;margin-bottom:8px}\ndiv.html pre{white-space:pre-wrap;font-family:inherit;background:#f8f8f8;padding:12px;border-radius:8px}\ntextarea{min-height:420px}"
         }
       },
-      "id": "543aac8a-d6d4-47f5-8a15-f53becf8ccf9",
+      "id": "116f3cdc-cb8f-4cd6-888d-194b5aa2061a",
       "name": "Human: Review Letter",
       "type": "n8n-nodes-base.form",
       "typeVersion": 1,
@@ -770,14 +770,14 @@
         3960,
         400
       ],
-      "webhookId": "62c8d1ca-8aef-422e-b89b-0f87d30b0ffd",
+      "webhookId": "379a5bf0-c3dc-4f89-9ecf-17d2f1e72c4f",
       "notes": "HUMAN GATE 2: nothing leaves without a human sign-off."
     },
     {
       "parameters": {
         "jsCode": "const chk = $('Engine: Check Letter').first().json;\nconst norm = (t) => String(t || '').replace(/\\r/g, '').trim();\nconst approved = norm($json['Final letter']) || norm(chk.final_letter);\nconst edited = approved !== norm(chk.final_letter);\nreturn [{ json: {\n  final_letter: approved,\n  letter_source: edited ? 'human_edited' : chk.source,\n  disputed_amount: chk.facts ? chk.facts.disputed_amount : null,\n} }];\n"
       },
-      "id": "5d94d67f-ca93-444f-9f2a-cfe6b88b5e10",
+      "id": "f27371c1-a60c-4cb5-87fd-c5c421111fd4",
       "name": "Finalize Letter",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -797,7 +797,7 @@
           "timeout": 10000
         }
       },
-      "id": "6ae4641b-6070-4f8f-aeb0-387a3989a3f7",
+      "id": "31b62ff2-4cc6-469d-978c-910c8a2ba675",
       "name": "Log: Dispute",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -816,7 +816,7 @@
           "customCss": ":root{--container-width:720px}\ndiv.html table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0 4px}\ndiv.html th{text-align:left;border-bottom:2px solid #9ca3af;padding:5px 6px;color:#374151}\ndiv.html td{padding:5px 6px;border-bottom:1px solid #e5e7eb;vertical-align:top;color:#374151}\ndiv.html tbody tr:nth-child(even) td{background:#f9fafb}\ndiv.html td b{color:#b45309}\ndiv.html td u{color:#15803d;text-decoration:none;font-weight:600}\ndiv.html td i{color:#6b7280;font-weight:600}\ndiv.html td em{color:#b91c1c;font-weight:700;font-style:normal}\ndiv.html h2{color:#b91c1c;font-size:26px;margin:4px 0 6px}\ndiv.html h3{color:#15803d;font-size:26px;margin:4px 0 6px}\ndiv.html h4{color:#1e3a8a;margin:16px 0 4px;font-size:15px}\ndiv.html p strong{display:inline-block;background:#fff4dc;color:#8a5a00;padding:3px 10px;border-radius:999px}\ndiv.html code{display:block;font-family:inherit;font-size:12px;background:#eef3fd;color:#1e3a8a;padding:6px 10px;border-radius:6px;margin-bottom:8px}\ndiv.html pre{white-space:pre-wrap;font-family:inherit;background:#f8f8f8;padding:12px;border-radius:8px}\n"
         }
       },
-      "id": "851ea46d-ab38-4192-90e6-0e4240d71bfa",
+      "id": "63bf61ba-d429-46d9-a56a-038d0280aef7",
       "name": "Done",
       "type": "n8n-nodes-base.form",
       "typeVersion": 1,
@@ -824,7 +824,7 @@
         4620,
         400
       ],
-      "webhookId": "3afb308a-3ea6-495c-b98f-bd7a2d1e46fe"
+      "webhookId": "133a4c5c-e6c9-4b2d-8864-e28e66b3e3d0"
     },
     {
       "parameters": {
@@ -833,7 +833,7 @@
         "width": 520,
         "color": 4
       },
-      "id": "9fbdbaf8-e0a0-48d8-b2ba-1ea8cb243ceb",
+      "id": "fd35eed7-faff-4a72-b9d1-1f1af59e31b5",
       "name": "Sticky Note",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,

@@ -16,7 +16,7 @@ Agentika 2.0 / NaSCon 2026. Theme: **Human + AI: Better Together**.
 
 ```
 Upload PDF (n8n form)
-  -> AI reads the PDF into fields (Groq Llama, structured extraction)        [AI]
+  -> AI reads the PDF into fields (Groq gpt-oss-120b, structured extraction)        [AI]
   -> Engine audits it: contract + gate records + port calendar + FMC rules  [CODE]
        REST /audit  and  AI agent calling the same engine over MCP
        Guard node: both must agree; code is the source of truth
@@ -94,7 +94,7 @@ demonstration and are not legal advice.
 - [FastAPI](https://fastapi.tiangolo.com/) and [Uvicorn](https://www.uvicorn.org/) (MIT / BSD)
 - [MCP Python SDK](https://github.com/modelcontextprotocol/python-sdk) (`FastMCP`, MIT)
 - [n8n](https://n8n.io/) (Sustainable Use License) and its LangChain AI nodes
-- [Groq](https://groq.com/) API with Meta Llama models
+- [Groq](https://groq.com/) API with the OpenAI gpt-oss-120b open-weight model
 - [ReportLab](https://www.reportlab.com/) for generating the sample PDFs (BSD)
 - Hosted on [Alternate Clouds](https://clouds.alternatefutures.ai)
 - AI coding assistance: Claude (Anthropic) helped write code and docs; the team reviewed, tested and deployed it.

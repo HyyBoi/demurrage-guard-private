@@ -13,7 +13,7 @@ from engine.logic import FORM_CSS  # noqa: E402
 
 ENGINE_URL = (sys.argv[1] if len(sys.argv) > 1 else "https://demurrage-engine-app.alternatefutures.ai").rstrip("/")
 OUT = Path(__file__).resolve().parent.parent / "n8n" / "demurrage-guard.json"
-GROQ_MODEL = "llama-3.3-70b-versatile"  # check console.groq.com for current models
+GROQ_MODEL = "openai/gpt-oss-120b"  # llama-3.3-70b-versatile was retired by Groq on 2026-08-16
 
 nodes: list[dict] = []
 connections: dict = {}

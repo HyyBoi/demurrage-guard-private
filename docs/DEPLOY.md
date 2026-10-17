@@ -1,133 +1,44 @@
-# Deploy DemurrageGuard: step by step
+# Deploy and update
 
-Two services on Alternate Clouds. Do them in this order.
+Live services on Alternate Clouds:
 
-| Service name (use exactly) | What | Port |
-|---|---|---|
-| `demurrage-engine` | This repo (Dockerfile) | 8000 |
-| `demurrage-n8n` | n8n | 5678 (check Source tab) |
-
-Public URLs follow `https://<service-name>-app.alternatefutures.ai`. If you use these exact names, the
-workflow JSON already points at the right engine URL and you edit nothing.
-
-Golden rule from the troubleshooting guide: **set variables -> Rebuild -> wait -> Deploy.**
-
----
-
-## 0. Push the code to GitHub (Windows PowerShell)
-
-```powershell
-cd "C:\AHM\Agentika 2.0\demurrage-guard"
-git status
-```
-
-If it says `not a git repository`, run once:
-
-```powershell
-git init
-git remote add origin https://github.com/HyyBoi/demurrage-guard.git
-git branch -M main
-```
-
-Then:
-
-```powershell
-git add .
-git commit -m "DemurrageGuard engine, n8n workflow, samples"
-git push -u origin main
-```
-
-Optional local check before pushing (needs Python 3.12):
-
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements-dev.txt
-python -m pytest -q
-uvicorn engine.app:app --port 8000
-```
-
-Open http://localhost:8000 and http://localhost:8000/demo/A. Ctrl+C to stop.
-
----
-
-## 1. Engine service (`demurrage-engine`)
-
-1. clouds.alternatefutures.ai -> your project -> **Add Service** -> deploy from GitHub / Docker
-   (the option that builds from a repo with a Dockerfile; if unsure, ask #support on Discord).
-2. Repo: `HyyBoi/demurrage-guard`, branch `main`, Dockerfile at the repo root.
-3. Name: **`demurrage-engine`**.
-4. Source tab: **PORT = 8000**.
-5. Variables: none needed. (Optional: `DEMO_AS_OF_DATE` = `2026-10-10` to pin the demo date.)
-6. **Rebuild** -> wait for success -> **Deploy**.
-7. Logs tab must show `Application startup complete`.
-8. Open in a private window:
-   - `https://alternate-glowing-serpent-8906-github-app.alternatefutures.ai/health` -> `{"status":"ok",...}`
-   - `https://alternate-glowing-serpent-8906-github-app.alternatefutures.ai/demo/A` -> "Overcharged by $875"
-
-502 Bad Gateway = PORT mismatch. Fix PORT to 8000, Rebuild, Deploy.
-
----
-
-## 2. n8n service (`demurrage-n8n`)
-
-1. Generate an encryption key in PowerShell and save it somewhere private (not in git):
-   ```powershell
-   [System.Guid]::NewGuid().ToString("N")
-   ```
-2. Add Service -> n8n (template if the dashboard offers one, otherwise Docker image `n8nio/n8n`).
-3. Name: **`demurrage-n8n`**.
-4. Variables:
-   - `N8N_ENCRYPTION_KEY` = the 32-character key from step 1. **Never change it later.**
-   - `WEBHOOK_URL` = `https://demurrage-n8n-app.alternatefutures.ai`
-   - Optional, only if the logs complain about `X-Forwarded-For`: `N8N_PROXY_HOPS` = `1`
-5. Source tab: PORT must match n8n's port (**5678** unless the template says otherwise).
-6. **Rebuild** -> **Deploy**. Open `https://demurrage-n8n-app.alternatefutures.ai` and create the owner account
-   (use a team email; this is your login, not for judges).
-
----
-
-## 3. Import and wire the workflow (in the n8n editor)
-
-1. **Groq key:** console.groq.com/keys -> Create API key. Copy it.
-2. n8n -> **Credentials** -> Add credential -> **Groq** -> paste key -> Save.
-3. **Workflows** -> **Create** -> top-right `...` menu -> **Import from File** -> choose
-   `n8n/demurrage-guard.json` from the repo.
-4. Open each of the 3 Groq nodes (`Groq (extract)`, `Groq (agent)`, `Groq (letter)`) -> pick the Groq
-   credential. Model: `openai/gpt-oss-120b` (Groq retired the Llama 3.3 model in Aug 2026).
-5. Only if your engine name is NOT `demurrage-engine`: edit the `Config` node (`engine_url`) and the
-   `MCP: DemurrageGuard Engine` node (URL ending in `/mcp`).
-6. Any node with a red warning triangle: open it, re-select the highlighted option, close it. (Node
-   options differ slightly between n8n versions.)
-7. **Save**, then **Publish / Activate** the workflow (toggle top-right).
-8. Open the `Upload Invoice` node -> copy the **Production URL**. That is your app link for judges.
-
-## 4. Test end to end
-
-Open the production form URL in a private window and upload each sample from `samples/`:
-
-| File | Expected |
+| What | URL |
 |---|---|
-| `invoice_A_overcharged.pdf` | "Overcharged by $875", 4 chargeable days, AI recommends Dispute in full |
-| `invoice_B_correct.pdf` | "Invoice is correct: $875", AI recommends Pay |
-| `invoice_C_late_fmc.pdf` | "Invoice invalid under FMC rules: $525 not payable" |
+| Engine (landing page, verdicts, decision log, REST, MCP) | https://alternate-glowing-serpent-8906-github-app.alternatefutures.ai |
+| n8n (the audit form) | https://n8n-j3bs-app.alternatefutures.ai/form/audit |
 
-Then pick **Partial dispute**, amount `400`, a reason, approve the letter. Check
-`https://alternate-glowing-serpent-8906-github-app.alternatefutures.ai/` -> your decision appears in the Human decision log.
+## Update the engine after pushing code
 
-## 5. If something breaks
+1. Push to GitHub (`main`).
+2. Dashboard: open the engine service, then **Source** tab, then **Rebuild**. Wait for the build to finish.
+3. **Deploy** (or Redeploy). The URL stays the same.
+4. Spend control must be **Pay as you go**. A budget cap stops the service.
+5. Check `/health` and `/` in a private window.
+
+## Update the n8n workflow
+
+1. In n8n, open the old DemurrageGuard workflow, **unpublish** it, then archive or delete it.
+2. **Create Workflow**, then `...` menu, **Import from File**, choose `n8n/demurrage-guard.json`.
+3. The three Groq nodes use the credential named **Groq account**. If a node shows a warning, open it and pick that credential.
+4. **Ctrl+S**, then **Publish**. The form is always at `<n8n URL>/form/audit` (set in the Upload Invoice node, Options, Form Path).
+
+## n8n service variables
+
+| Variable | Value |
+|---|---|
+| `N8N_HOST` | `0.0.0.0` |
+| `N8N_PORT` | `5678` |
+| `N8N_PROTOCOL` | `https` |
+| `WEBHOOK_URL` | `https://n8n-j3bs-app.alternatefutures.ai` |
+| `N8N_ENCRYPTION_KEY` | 32 random characters. Never change it. |
+
+## If something breaks
 
 | Symptom | Fix |
 |---|---|
-| Engine 502 | PORT = 8000 in Source tab, Rebuild, Deploy |
-| Pushed code, nothing changed | Source tab -> Rebuild -> wait -> Deploy |
-| n8n credentials won't save | `N8N_ENCRYPTION_KEY` set? Same key as before? |
-| Form or webhook URL wrong | `WEBHOOK_URL` must be exactly `https://demurrage-n8n-app.alternatefutures.ai` |
-| AI Agent / MCP node errors | The workflow still works: the guard falls back to the REST engine. Check the MCP URL ends in `/mcp` and transport is HTTP Streamable |
-| Verdict page shows plain text, no colours | n8n strips some styling in forms. The content is still correct; `/demo/A` on the engine shows the styled version |
-| Groq errors / rate limit | Wait a minute, or make a second key and switch the credential |
-| Anything else | Logs tab first, then #support on Discord with repo link, error as a code block, exact steps |
-
-**Cut line if n8n fights you:** delete the AI Agent + MCP + Groq (agent) nodes and connect
-`Engine: Audit` straight to `Guard: Cross-check`. The guard will say "cross-check unavailable" and
-everything else works. Keep `/mcp` deployed and say honestly in the demo that the MCP server is live.
+| Engine 502 | Port must be 8000. Rebuild, then Deploy |
+| Service "Not running" | Spend control: Pay as you go, Save, then Redeploy |
+| Form says "Problem loading form" | Workflow not published, or published seconds ago. Publish, wait 10 seconds, reload |
+| Verdict page never appears after upload | `WEBHOOK_URL` is not exactly the n8n URL |
+| "Check the invoice details" page every time | Groq key or model. n8n, Executions, open the red node |
+| Anything else | Logs tab, then #support on Discord |

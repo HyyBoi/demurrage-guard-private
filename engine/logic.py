@@ -497,7 +497,6 @@ def _audit(raw: dict, as_of_date: Any) -> dict:
         "day_table": rows,
     }
     result["summary_text"] = summary_text(result)
-    result["verdict_html"] = verdict_html(result)
     result["verdict_form_html"] = verdict_form_html(result)
     return result
 
@@ -530,142 +529,87 @@ def summary_text(r: dict) -> str:
     return "\n".join(lines)
 
 
-_STATUS_COLORS = {
-    "chargeable": ("#fde8e8", "#9b1c1c"),
-    "free": ("#e6f4ea", "#1e6b34"),
-    "weekend": ("#eef1f5", "#3f4a5a"),
-    "holiday": ("#fff4dc", "#8a5a00"),
-    "port_closure": ("#fff4dc", "#8a5a00"),
-    "after_gate_out": ("#f3e8ff", "#5b21b6"),
-    "before_discharge": ("#f3e8ff", "#5b21b6"),
-}
-
-
-def verdict_html(r: dict) -> str:
-    e = html.escape
-    fmc = r["fmc"]
-    bad = r["verdict"] in ("overcharged", "invalid_fmc")
-    head_bg, head_fg = ("#fde8e8", "#9b1c1c") if bad else ("#e6f4ea", "#1e6b34")
-    if fmc["window_open"]:
-        badge_bg = "#fde8e8" if fmc["days_remaining"] <= 7 else "#fff4dc"
-        badge = f"Dispute window closes in {fmc['days_remaining']} days ({_fmt_day(fmc['dispute_deadline'])})"
-    else:
-        badge_bg = "#eef1f5"
-        badge = f"Dispute window closed on {_fmt_day(fmc['dispute_deadline'])}"
-    fmc_line = ("FMC 30-day billing rule: passed" if fmc["valid"]
-                else f"FMC 30-day billing rule: FAILED ({fmc['days_late']} days late)")
-
-    rows_html = []
-    for row in r["day_table"]:
-        bg, fg = _STATUS_COLORS[row["status"]]
-        mark = ""
-        if row["wrongly_billed"]:
-            mark = "<b style='color:#9b1c1c'>Billed, not owed</b>"
-        elif row["billed"]:
-            mark = "Billed, owed"
-        elif row["status"] == "chargeable":
-            mark = "Owed, not billed"
-        rows_html.append(
-            f"<tr style='background:{bg};color:{fg}'>"
-            f"<td style='padding:4px 8px'>{e(_fmt_day(row['date']))}</td>"
-            f"<td style='padding:4px 8px'><b>{e(row['label'])}</b><br><small>{e(row['reason'])}</small></td>"
-            f"<td style='padding:4px 8px;text-align:right'>{money(row['billed_charge']) if row['billed'] else '-'}</td>"
-            f"<td style='padding:4px 8px;text-align:right'>{money(row['correct_charge']) if row['correct_charge'] else '-'}</td>"
-            f"<td style='padding:4px 8px'>{mark}</td></tr>"
-        )
-    findings = "".join(f"<li>{e(f['text'])}</li>" for f in r["findings"] if f["severity"] != "info")
-    rec_label = {"dispute_full": "Dispute in full", "pay": "Pay invoice"}[r["recommendation"]]
-    inv = r["invoice"]
-    return (
-        "<div style='font-family:system-ui,Segoe UI,Arial,sans-serif;font-size:14px;line-height:1.4'>"
-        f"<div style='background:{head_bg};color:{head_fg};padding:12px 14px;border-radius:8px'>"
-        f"<div style='font-size:20px;font-weight:700'>{e(r['headline'])}</div>"
-        f"<div>Billed {r['billed_days']} days = {money(r['billed_amount'])} &nbsp;|&nbsp; "
-        f"Contract says {r['correct_days']} days = {money(r['correct_amount'])}</div></div>"
-        f"<div style='margin:8px 0;padding:8px 12px;border-radius:8px;background:{badge_bg}'>"
-        f"<b>{e(badge)}</b> &nbsp;&middot;&nbsp; {e(fmc_line)}</div>"
-        f"<p style='margin:6px 0'><b>{e(r['contract']['name'])}</b> &middot; invoice {e(inv.get('invoice_number') or '-')} "
-        f"&middot; container {e(inv['container_id'])} &middot; discharged {e(_fmt_day(r['gate_events']['discharge_date']))}, "
-        f"gate-out {e(_fmt_day(r['gate_events']['gate_out_date']))} &middot; contract {e(r['contract']['contract_id'])}: "
-        f"{r['contract']['free_days']} free working days, {money(r['contract_rate'])}/day</p>"
-        "<table style='border-collapse:collapse;width:100%;font-size:13px'>"
-        "<tr style='text-align:left;border-bottom:2px solid #999'><th style='padding:4px 8px'>Day</th>"
-        "<th style='padding:4px 8px'>Status (code-verified)</th><th style='padding:4px 8px;text-align:right'>Carrier billed</th>"
-        "<th style='padding:4px 8px;text-align:right'>Contract</th><th style='padding:4px 8px'></th></tr>"
-        + "".join(rows_html) +
-        "</table>"
-        + (f"<p style='margin:10px 0 4px'><b>Evidence</b></p><ul style='margin:0;padding-left:18px'>{findings}</ul>" if findings else "")
-        + f"<div style='margin-top:10px;padding:10px 12px;border-left:4px solid #2b59c3;background:#eef3fd'>"
-        f"<b>AI recommendation: {e(rec_label)}</b><br>{e(r['recommendation_reason'])}<br>"
-        "<small>You decide. You know the carrier relationship and any operational fault on your side; the system does not.</small></div>"
-        "</div>"
-    )
-
-
 def verdict_form_html(r: dict) -> str:
-    """Same verdict using only tags n8n forms allow (no style/class attributes).
-    Colours come from FORM_CSS, which the n8n Form node injects as custom CSS."""
+    """The verdict using only tags n8n forms allow (no style/class attributes).
+    Styling comes from FORM_CSS, which each n8n Form node injects as custom CSS."""
     e = html.escape
     fmc = r["fmc"]
     bad = r["verdict"] in ("overcharged", "invalid_fmc")
     head = f"<h2>{e(r['headline'])}</h2>" if bad else f"<h3>{e(r['headline'])}</h3>"
     if fmc["window_open"]:
-        badge = f"Dispute window closes in {fmc['days_remaining']} days ({_fmt_day(fmc['dispute_deadline'])})"
+        badge = f"{fmc['days_remaining']} days left to dispute (until {_fmt_day(fmc['dispute_deadline'])})"
     else:
         badge = f"Dispute window closed on {_fmt_day(fmc['dispute_deadline'])}"
-    fmc_line = ("FMC 30-day billing rule: passed" if fmc["valid"]
-                else f"FMC 30-day billing rule: FAILED, invoice issued {fmc['days_late']} days too late")
+    fmc_line = ("FMC 30-day billing rule passed" if fmc["valid"]
+                else f"FMC 30-day billing rule failed: invoice {fmc['days_late']} days late")
     wrap = {"chargeable": "b", "free": "u"}
     rows = []
     for row in r["day_table"]:
         tag = wrap.get(row["status"], "i")
         if row["wrongly_billed"]:
-            mark = "<em>&#10007; Billed, not owed</em>"
+            mark = "<em>Billed, not owed</em>"
         elif row["billed"]:
-            mark = "&#10003; Billed, owed"
+            mark = "Billed, owed"
         elif row["status"] == "chargeable":
             mark = "Owed, not billed"
         else:
             mark = ""
         rows.append(
             f"<tr><td>{e(_fmt_day(row['date']))}</td><td><{tag}>{e(row['label'])}</{tag}><br>{e(row['reason'])}</td>"
-            f"<td>{money(row['billed_charge']) if row['billed'] else '-'}</td>"
-            f"<td>{money(row['correct_charge']) if row['correct_charge'] else '-'}</td><td>{mark}</td></tr>")
+            f"<td>{money(row['billed_charge']) if row['billed'] else ''}</td>"
+            f"<td>{money(row['correct_charge']) if row['correct_charge'] else ''}</td><td>{mark}</td></tr>")
     findings = "".join(f"<li>{e(f['text'])}</li>" for f in r["findings"] if f["severity"] != "info")
-    rec_label = {"dispute_full": "Dispute in full", "pay": "Pay invoice"}[r["recommendation"]]
+    rec_label = {"dispute_full": "Dispute in full", "pay": "Pay the invoice"}[r["recommendation"]]
     inv = r["invoice"]
+    c = r["contract"]
     return (
         head
-        + f"<p>Carrier billed <b>{r['billed_days']} days = {money(r['billed_amount'])}</b>. "
-        f"Contract allows <b>{r['correct_days']} days = {money(r['correct_amount'])}</b>.</p>"
-        f"<p><strong>{e(badge)}</strong> &nbsp; {e(fmc_line)}</p>"
-        f"<p>{e(r['contract']['name'])} &middot; invoice {e(inv.get('invoice_number') or '-')} &middot; container "
-        f"{e(inv['container_id'])} &middot; discharged {e(_fmt_day(r['gate_events']['discharge_date']))}, gate-out "
-        f"{e(_fmt_day(r['gate_events']['gate_out_date']))} &middot; contract {e(r['contract']['contract_id'])}: "
-        f"{r['contract']['free_days']} free working days, then {money(r['contract_rate'])}/day</p>"
-        "<table><thead><tr><th>Day</th><th>Status (checked by code)</th><th>Billed</th><th>Contract</th><th></th></tr></thead>"
+        + f"<p>Billed <b>{r['billed_days']} days, {money(r['billed_amount'])}</b>. "
+        f"The contract allows <b>{r['correct_days']} days, {money(r['correct_amount'])}</b>.</p>"
+        f"<p><strong>{e(badge)}</strong> <strong>{e(fmc_line)}</strong></p>"
+        f"<p>{e(c['name'])}, invoice {e(inv.get('invoice_number') or '-')}, container {e(inv['container_id'])}. "
+        f"Discharged {e(_fmt_day(r['gate_events']['discharge_date']))}, left the terminal "
+        f"{e(_fmt_day(r['gate_events']['gate_out_date']))}. Contract {e(c['contract_id'])}: {c['free_days']} free "
+        f"working days, then {money(r['contract_rate'])} a day.</p>"
+        "<table><thead><tr><th>Day</th><th>Status</th><th>Billed</th><th>Contract</th><th></th></tr></thead>"
         "<tbody>" + "".join(rows) + "</tbody></table>"
         + (f"<h4>Evidence</h4><ul>{findings}</ul>" if findings else "")
         + f"<h4>AI recommendation: {e(rec_label)}</h4><p>{e(r['recommendation_reason'])}</p>"
-        "<p><i>Your call. You know the carrier relationship and any fault on your side; the system does not.</i></p>"
+        "<p><i>Your call. You know the carrier relationship and any fault on your side. The system does not.</i></p>"
     )
 
 
-FORM_CSS = """:root{--container-width:720px}
-div.html table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0 4px}
-div.html th{text-align:left;border-bottom:2px solid #9ca3af;padding:5px 6px;color:#374151}
-div.html td{padding:5px 6px;border-bottom:1px solid #e5e7eb;vertical-align:top;color:#374151}
-div.html tbody tr:nth-child(even) td{background:#f9fafb}
-div.html td b{color:#b45309}
-div.html td u{color:#15803d;text-decoration:none;font-weight:600}
-div.html td i{color:#6b7280;font-weight:600}
-div.html td em{color:#b91c1c;font-weight:700;font-style:normal}
-div.html h2{color:#b91c1c;font-size:26px;margin:4px 0 6px}
-div.html h3{color:#15803d;font-size:26px;margin:4px 0 6px}
-div.html h4{color:#1e3a8a;margin:16px 0 4px;font-size:15px}
-div.html p strong{display:inline-block;background:#fff4dc;color:#8a5a00;padding:3px 10px;border-radius:999px}
-div.html code{display:block;font-family:inherit;font-size:12px;background:#eef3fd;color:#1e3a8a;padding:6px 10px;border-radius:6px;margin-bottom:8px}
-div.html pre{white-space:pre-wrap;font-family:inherit;background:#f8f8f8;padding:12px;border-radius:8px}
+FORM_CSS = """@font-face{font-family:"Big Shoulders Display";font-weight:800;font-display:swap;src:url(__FONT_BASE__/fonts/big-shoulders-display-latin-800-normal.woff2) format("woff2")}
+@font-face{font-family:"Archivo";font-weight:400;font-display:swap;src:url(__FONT_BASE__/fonts/archivo-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"Archivo";font-weight:500 600;font-display:swap;src:url(__FONT_BASE__/fonts/archivo-latin-600-normal.woff2) format("woff2")}
+@font-face{font-family:"Archivo";font-weight:700;font-display:swap;src:url(__FONT_BASE__/fonts/archivo-latin-700-normal.woff2) format("woff2")}
+:root{--container-width:760px;--font-family:"Archivo",system-ui,sans-serif;--font-size-label:15px;--font-size-input:15px;
+--font-size-paragraph:15px;--color-background:#EDF1F4;--color-card-border:#D5DDE5;--color-card-shadow:rgba(15,34,56,.06);
+--color-header:#0F2238;--color-label:#0F2238;--color-input-border:#C3CDD7;--color-input-text:#0F2238;
+--color-focus-border:#0F2238;--color-submit-btn-bg:#F2B705;--color-submit-btn-text:#0F2238;--color-html-text:#2A3D55;
+--color-html-link:#0F2238;--border-radius-card:10px}
+body{font-variant-numeric:tabular-nums}
+body::before{content:"DemurrageGuard";display:block;background:#0F2238;color:#fff;font:800 24px/64px "Big Shoulders Display",Impact,sans-serif;padding:0 24px;margin:0 0 8px}
+.form-header h1{font:800 34px/1.05 "Big Shoulders Display",Impact,sans-serif;color:#0F2238;text-align:left}
+.form-header p{text-align:left}
+button#submit-btn,#submit-btn{font-weight:700;border-radius:6px}
+#submit-btn:hover{filter:brightness(1.06)}
+div.html{color:#2A3D55}
+div.html table{width:100%;border-collapse:collapse;font-size:14px;margin:12px 0 4px}
+div.html th{text-align:left;font-weight:600;color:#7C8FA3;border-bottom:1px solid #D5DDE5;padding:8px 8px}
+div.html td{padding:8px 8px;border-bottom:1px solid #E3E9EE;vertical-align:top;color:#2A3D55}
+div.html td b{color:#0F2238;font-weight:700}
+div.html td u{color:#1F7A63;text-decoration:none;font-weight:600}
+div.html td i{color:#7C8FA3;font-weight:600;font-style:normal}
+div.html td em{display:inline-block;font-style:normal;font-weight:700;color:#0F2238;background:#F2B705;padding:2px 8px 2px 12px;border-radius:3px;border-left:6px solid transparent;border-image:repeating-linear-gradient(-45deg,#0F2238 0 4px,#F2B705 4px 8px) 0 0 0 6px}
+div.html h2,div.html h3{font:800 44px/1 "Big Shoulders Display",Impact,sans-serif;margin:4px 0 10px}
+div.html h2{color:#C8102E}div.html h3{color:#1F7A63}
+div.html h4{font-size:16px;color:#0F2238;margin:20px 0 6px}
+div.html p strong{display:inline-block;background:#FFF3C9;color:#0F2238;font-weight:600;font-size:14px;padding:4px 12px;border-radius:999px;margin:0 6px 6px 0}
+div.html code{display:block;font-family:inherit;font-size:14px;background:#DDEFE8;color:#1F7A63;font-weight:600;padding:8px 12px;border-radius:6px;margin-bottom:12px}
+div.html pre{white-space:pre-wrap;font-family:inherit;background:#F6F8FA;padding:14px;border-radius:8px}
+div.html a{color:#0F2238;font-weight:600}
+textarea{font-family:inherit}
 """
 
 

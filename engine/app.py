@@ -10,7 +10,6 @@ No secrets and no environment variables are required to start.
 from __future__ import annotations
 
 import contextlib
-import html
 import json
 import logging
 import os
@@ -24,12 +23,14 @@ from fastapi.responses import FileResponse, HTMLResponse
 from mcp.server.fastmcp import FastMCP
 from mcp.server.transport_security import TransportSecuritySettings
 
-from engine import logic
+from engine import logic, ui
 
 log = logging.getLogger("demurrage")
 ROOT = Path(__file__).resolve().parent.parent
 SAMPLES_DIR = ROOT / "samples"
 DEMO_AS_OF = os.getenv("DEMO_AS_OF_DATE") or None  # optional: pin "today" for demos
+# Public link to the n8n upload form (n8n Form Trigger uses the fixed path "audit").
+FORM_URL = os.getenv("FORM_URL") or "https://n8n-j3bs-app.alternatefutures.ai/form/audit"
 
 # --------------------------------------------------------------------------
 # MCP server (same functions as REST)
@@ -271,69 +272,54 @@ def list_decisions() -> dict:
 # --------------------------------------------------------------------------
 
 SAMPLE_INVOICES = {
-    "A": {"title": "Invoice A: overcharged (hero demo)", "pdf": "invoice_A_overcharged.pdf",
+    "A": {"label": "Invoice A", "about": "Overcharged: weekends, Labor Day and a free day billed", "pdf": "invoice_A_overcharged.pdf",
           "invoice": {"carrier": "Oceanic Line", "invoice_number": "OCL-DD-2026-10-0147",
                       "invoice_date": "2026-10-01", "container_id": "OLCU4821937",
                       "charge_start": "2026-09-06", "charge_end": "2026-09-14", "rate_per_day": 175,
                       "billed_days": 9, "total_amount": 1575, "currency": "USD"}},
-    "B": {"title": "Invoice B: correct (pay)", "pdf": "invoice_B_correct.pdf",
+    "B": {"label": "Invoice B", "about": "Billed correctly, so the right call is to pay", "pdf": "invoice_B_correct.pdf",
           "invoice": {"carrier": "Oceanic Line", "invoice_number": "OCL-DD-2026-10-0233",
                       "invoice_date": "2026-10-05", "container_id": "OLCU5530128",
                       "charge_start": "2026-09-21", "charge_end": "2026-09-25", "rate_per_day": 175,
                       "billed_days": 5, "total_amount": 875, "currency": "USD"}},
-    "C": {"title": "Invoice C: late, invalid under FMC", "pdf": "invoice_C_late_fmc.pdf",
+    "C": {"label": "Invoice C", "about": "Sent too late, so it is invalid under FMC rules", "pdf": "invoice_C_late_fmc.pdf",
           "invoice": {"carrier": "Oceanic Line", "invoice_number": "OCL-DD-2026-09-0612",
                       "invoice_date": "2026-09-20", "container_id": "OLCU7719402",
                       "charge_start": "2026-07-13", "charge_end": "2026-07-15", "rate_per_day": 175,
                       "billed_days": 3, "total_amount": 525, "currency": "USD"}},
 }
 
-_PAGE = """<!doctype html><html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1"><title>{title}</title>
-<style>body{{font-family:system-ui,Segoe UI,Arial,sans-serif;max-width:920px;margin:24px auto;padding:0 16px;color:#1f2937}}
-a{{color:#2b59c3}} code{{background:#f3f4f6;padding:1px 5px;border-radius:4px}}
-.card{{border:1px solid #e5e7eb;border-radius:10px;padding:14px 16px;margin:12px 0}}
-table.t td,table.t th{{padding:4px 8px;border-bottom:1px solid #eee;text-align:left;font-size:13px}}</style></head>
-<body>{body}</body></html>"""
+
+def _sample(key: str, as_of: str | None = None) -> dict:
+    return logic.audit_invoice(SAMPLE_INVOICES[key]["invoice"], as_of or DEMO_AS_OF)
 
 
 @app.get("/", response_class=HTMLResponse)
 def home() -> str:
-    demos = "".join(
-        f"<li><a href='/demo/{k}'>{html.escape(v['title'])}</a> &middot; "
-        f"<a href='/samples/{v['pdf']}'>PDF</a></li>" for k, v in SAMPLE_INVOICES.items())
-    rows = "".join(
-        f"<tr><td>{html.escape(str(d['at']))}</td><td>{html.escape(str(d['invoice_number']))}</td>"
-        f"<td>{html.escape(str(d['ai_recommendation']))}</td><td><b>{html.escape(str(d['human_decision']))}</b></td>"
-        f"<td>{'yes' if d['overrode_ai'] else 'no'}</td><td>{html.escape(str(d['reason'] or ''))}</td></tr>"
-        for d in list(DECISIONS)[:15]) or "<tr><td colspan=6>No decisions yet. Run the n8n workflow.</td></tr>"
-    body = f"""
-<h1>DemurrageGuard</h1>
-<p><b>AI reads the invoice. Code proves the math. A human decides.</b><br>
-Catches ocean-freight demurrage &amp; detention overcharges against the contract, terminal gate records,
-port calendar and US FMC billing rules (46 CFR Part 541).</p>
-<div class="card"><b>This service is the deterministic engine.</b> The full human-in-the-loop workflow runs in n8n.
-<ul><li>REST: <code>POST /audit</code> &middot; <code>POST /letter</code> &middot; <code>POST /letter/check</code> &middot;
-<a href="/docs">API docs</a> &middot; <a href="/health">health</a></li>
-<li>MCP (streamable HTTP): <code>/mcp</code> &middot; tools: audit_invoice, get_contract, get_gate_events,
-get_calendar, check_fmc_window</li></ul></div>
-<div class="card"><b>Try the sample invoices</b> (verdict computed live by the engine)<ul>{demos}</ul></div>
-<div class="card"><b>Human decision log</b> (audit trail)
-<table class="t"><tr><th>When (UTC)</th><th>Invoice</th><th>AI said</th><th>Human chose</th><th>Override?</th><th>Reason</th></tr>{rows}</table></div>
-"""
-    return _PAGE.format(title="DemurrageGuard", body=body)
+    samples = [(k, s, _sample(k)) for k, s in SAMPLE_INVOICES.items()]
+    return ui.landing(samples[0][2], samples, list(DECISIONS), FORM_URL)
 
 
 @app.get("/demo/{key}", response_class=HTMLResponse)
 def demo(key: str, as_of_date: str | None = None) -> str:
-    s = SAMPLE_INVOICES.get(key.upper())
-    if not s:
+    k = key.upper()
+    if k not in SAMPLE_INVOICES:
         raise HTTPException(404, "Unknown sample. Use A, B or C.")
-    r = logic.audit_invoice(s["invoice"], as_of_date or DEMO_AS_OF)
-    content = r["verdict_html"] if r["ok"] else f"<pre>{html.escape(json.dumps(r, indent=2))}</pre>"
-    body = (f"<p><a href='/'>&larr; DemurrageGuard</a></p><h2>{html.escape(s['title'])}</h2>{content}"
-            f"<p><small>Engine output as JSON: <code>POST /audit</code> with this invoice.</small></p>")
-    return _PAGE.format(title=s["title"], body=body)
+    r = _sample(k, as_of_date)
+    return ui.demo_page(k, SAMPLE_INVOICES[k], r, FORM_URL) if r["ok"] else ui.error_page(r, FORM_URL)
+
+
+FONTS_DIR = Path(__file__).resolve().parent / "static" / "fonts"
+
+
+@app.get("/fonts/{name}")
+def font(name: str):
+    path = (FONTS_DIR / name).resolve()
+    if path.parent != FONTS_DIR or not path.is_file() or path.suffix != ".woff2":
+        raise HTTPException(404, "Not found")
+    # CORS so the n8n forms (another origin) can use the same typefaces
+    return FileResponse(path, media_type="font/woff2",
+                        headers={"Access-Control-Allow-Origin": "*", "Cache-Control": "public, max-age=86400"})
 
 
 @app.get("/samples/{name}")

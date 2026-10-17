@@ -47,7 +47,7 @@ def test_hero_invoice_overcharged():
     # FMC: valid, dispute window closes Oct 31 -> 21 days left on Oct 10
     assert r["fmc"]["valid"] is True
     assert r["fmc"]["dispute_deadline"] == "2026-10-31" and r["fmc"]["days_remaining"] == 21
-    assert "Overcharged by $875" in r["verdict_html"]
+    assert "Overcharged by $875" in r["verdict_form_html"]
 
 
 def test_clean_invoice_pay():

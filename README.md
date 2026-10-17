@@ -10,13 +10,16 @@ just pay.
 
 DemurrageGuard audits a carrier invoice PDF in about a minute and lets a logistics manager make the call.
 
+**Live:** [landing page and sample verdicts](https://alternate-glowing-serpent-8906-github-app.alternatefutures.ai)
+and [the audit form](https://n8n-j3bs-app.alternatefutures.ai/form/audit), both on Alternate Clouds.
+
 Agentika 2.0 / NaSCon 2026. Theme: **Human + AI: Better Together**.
 
 ## How it works
 
 ```
 Upload PDF (n8n form)
-  -> AI reads the PDF into fields (Groq gpt-oss-120b, structured extraction)        [AI]
+  -> AI reads the PDF into fields (Groq gpt-oss-120b, structured extraction) [AI]
   -> Engine audits it: contract + gate records + port calendar + FMC rules  [CODE]
        REST /audit  and  AI agent calling the same engine over MCP
        Guard node: both must agree; code is the source of truth
@@ -43,8 +46,10 @@ Overcharged by $875.**
 ```
 engine/           FastAPI service: REST + MCP server (one process)
   logic.py        the deterministic audit (pure functions)
-  app.py          /audit /letter /letter/check /decisions /health, MCP at /mcp, demo pages
+  app.py          /audit /letter /letter/check /decisions /health, MCP at /mcp
+  ui.py           landing page, sample verdict pages, decision log
   data/           fictional contracts, terminal gate events, port holidays
+  static/fonts/   self-hosted typefaces (also used by the n8n forms)
 tests/            pytest suite (7 tests)
 n8n/              demurrage-guard.json: the n8n workflow (import into n8n)
 samples/          3 demo invoice PDFs (A overcharged, B correct, C late/FMC-invalid)
@@ -77,12 +82,13 @@ uvicorn engine.app:app --port 8000        # open http://localhost:8000
 | `/mcp` | MCP server (streamable HTTP): `audit_invoice`, `get_contract`, `get_gate_events`, `get_calendar`, `check_fmc_window` |
 | `GET /docs` | OpenAPI docs |
 
-No environment variables are required. Optional: `DEMO_AS_OF_DATE=2026-10-10` pins "today" for demos.
+No environment variables are required. Optional: `FORM_URL` (where the "Audit an invoice" buttons point) and
+`DEMO_AS_OF_DATE=2026-10-10` (pins "today" for demos).
 
 ## Deploy
 
-See [docs/DEPLOY.md](docs/DEPLOY.md). Two services on Alternate Clouds: `demurrage-engine` (this repo's
-Dockerfile, PORT 8000) and `demurrage-n8n` (n8n).
+See [docs/DEPLOY.md](docs/DEPLOY.md). Two services on Alternate Clouds: the engine (this repo's Dockerfile,
+port 8000, built from GitHub) and n8n (the platform's n8n template).
 
 ## Data and disclaimer
 
@@ -96,5 +102,7 @@ demonstration and are not legal advice.
 - [n8n](https://n8n.io/) (Sustainable Use License) and its LangChain AI nodes
 - [Groq](https://groq.com/) API with the OpenAI gpt-oss-120b open-weight model
 - [ReportLab](https://www.reportlab.com/) for generating the sample PDFs (BSD)
+- Typefaces [Big Shoulders Display](https://fonts.google.com/specimen/Big+Shoulders+Display) and
+  [Archivo](https://fonts.google.com/specimen/Archivo), SIL Open Font License, via [Fontsource](https://fontsource.org)
 - Hosted on [Alternate Clouds](https://clouds.alternatefutures.ai)
 - AI coding assistance: Claude (Anthropic) helped write code and docs; the team reviewed, tested and deployed it.

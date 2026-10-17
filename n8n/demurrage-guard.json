@@ -3,10 +3,15 @@
   "nodes": [
     {
       "parameters": {
-        "formTitle": "DemurrageGuard: audit a carrier invoice",
-        "formDescription": "Upload a demurrage / detention invoice (PDF). AI reads it, our engine checks it against your contract, terminal gate records, the port calendar and US FMC billing rules. Then you decide what to do.",
+        "formTitle": "Audit a demurrage invoice",
+        "formDescription": "",
         "formFields": {
           "values": [
+            {
+              "fieldType": "html",
+              "elementName": "intro",
+              "html": "<p>Upload the carrier's demurrage or detention invoice. The AI reads it, the audit engine checks every billed day against your contract, the terminal's gate records, port holidays and the US FMC billing rules. Then you decide what to do.</p><p>No invoice to hand? Download a sample: <a href=\"https://alternate-glowing-serpent-8906-github-app.alternatefutures.ai/samples/invoice_A_overcharged.pdf\">A, overcharged</a>, <a href=\"https://alternate-glowing-serpent-8906-github-app.alternatefutures.ai/samples/invoice_B_correct.pdf\">B, correct</a>, <a href=\"https://alternate-glowing-serpent-8906-github-app.alternatefutures.ai/samples/invoice_C_late_fmc.pdf\">C, sent too late</a>.</p>"
+            },
             {
               "fieldLabel": "Invoice PDF",
               "fieldType": "file",
@@ -18,11 +23,12 @@
         },
         "options": {
           "appendAttribution": false,
-          "buttonLabel": "Audit invoice",
-          "customCss": ":root{--container-width:720px}\ndiv.html table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0 4px}\ndiv.html th{text-align:left;border-bottom:2px solid #9ca3af;padding:5px 6px;color:#374151}\ndiv.html td{padding:5px 6px;border-bottom:1px solid #e5e7eb;vertical-align:top;color:#374151}\ndiv.html tbody tr:nth-child(even) td{background:#f9fafb}\ndiv.html td b{color:#b45309}\ndiv.html td u{color:#15803d;text-decoration:none;font-weight:600}\ndiv.html td i{color:#6b7280;font-weight:600}\ndiv.html td em{color:#b91c1c;font-weight:700;font-style:normal}\ndiv.html h2{color:#b91c1c;font-size:26px;margin:4px 0 6px}\ndiv.html h3{color:#15803d;font-size:26px;margin:4px 0 6px}\ndiv.html h4{color:#1e3a8a;margin:16px 0 4px;font-size:15px}\ndiv.html p strong{display:inline-block;background:#fff4dc;color:#8a5a00;padding:3px 10px;border-radius:999px}\ndiv.html code{display:block;font-family:inherit;font-size:12px;background:#eef3fd;color:#1e3a8a;padding:6px 10px;border-radius:6px;margin-bottom:8px}\ndiv.html pre{white-space:pre-wrap;font-family:inherit;background:#f8f8f8;padding:12px;border-radius:8px}\n"
+          "buttonLabel": "Check this invoice",
+          "path": "audit",
+          "customCss": "@font-face{font-family:\"Big Shoulders Display\";font-weight:800;font-display:swap;src:url(https://alternate-glowing-serpent-8906-github-app.alternatefutures.ai/fonts/big-shoulders-display-latin-800-normal.woff2) format(\"woff2\")}\n@font-face{font-family:\"Archivo\";font-weight:400;font-display:swap;src:url(https://alternate-glowing-serpent-8906-github-app.alternatefutures.ai/fonts/archivo-latin-400-normal.woff2) format(\"woff2\")}\n@font-face{font-family:\"Archivo\";font-weight:500 600;font-display:swap;src:url(https://alternate-glowing-serpent-8906-github-app.alternatefutures.ai/fonts/archivo-latin-600-normal.woff2) format(\"woff2\")}\n@font-face{font-family:\"Archivo\";font-weight:700;font-display:swap;src:url(https://alternate-glowing-serpent-8906-github-app.alternatefutures.ai/fonts/archivo-latin-700-normal.woff2) format(\"woff2\")}\n:root{--container-width:760px;--font-family:\"Archivo\",system-ui,sans-serif;--font-size-label:15px;--font-size-input:15px;\n--font-size-paragraph:15px;--color-background:#EDF1F4;--color-card-border:#D5DDE5;--color-card-shadow:rgba(15,34,56,.06);\n--color-header:#0F2238;--color-label:#0F2238;--color-input-border:#C3CDD7;--color-input-text:#0F2238;\n--color-focus-border:#0F2238;--color-submit-btn-bg:#F2B705;--color-submit-btn-text:#0F2238;--color-html-text:#2A3D55;\n--color-html-link:#0F2238;--border-radius-card:10px}\nbody{font-variant-numeric:tabular-nums}\nbody::before{content:\"DemurrageGuard\";display:block;background:#0F2238;color:#fff;font:800 24px/64px \"Big Shoulders Display\",Impact,sans-serif;padding:0 24px;margin:0 0 8px}\n.form-header h1{font:800 34px/1.05 \"Big Shoulders Display\",Impact,sans-serif;color:#0F2238;text-align:left}\n.form-header p{text-align:left}\nbutton#submit-btn,#submit-btn{font-weight:700;border-radius:6px}\n#submit-btn:hover{filter:brightness(1.06)}\ndiv.html{color:#2A3D55}\ndiv.html table{width:100%;border-collapse:collapse;font-size:14px;margin:12px 0 4px}\ndiv.html th{text-align:left;font-weight:600;color:#7C8FA3;border-bottom:1px solid #D5DDE5;padding:8px 8px}\ndiv.html td{padding:8px 8px;border-bottom:1px solid #E3E9EE;vertical-align:top;color:#2A3D55}\ndiv.html td b{color:#0F2238;font-weight:700}\ndiv.html td u{color:#1F7A63;text-decoration:none;font-weight:600}\ndiv.html td i{color:#7C8FA3;font-weight:600;font-style:normal}\ndiv.html td em{display:inline-block;font-style:normal;font-weight:700;color:#0F2238;background:#F2B705;padding:2px 8px 2px 12px;border-radius:3px;border-left:6px solid transparent;border-image:repeating-linear-gradient(-45deg,#0F2238 0 4px,#F2B705 4px 8px) 0 0 0 6px}\ndiv.html h2,div.html h3{font:800 44px/1 \"Big Shoulders Display\",Impact,sans-serif;margin:4px 0 10px}\ndiv.html h2{color:#C8102E}div.html h3{color:#1F7A63}\ndiv.html h4{font-size:16px;color:#0F2238;margin:20px 0 6px}\ndiv.html p strong{display:inline-block;background:#FFF3C9;color:#0F2238;font-weight:600;font-size:14px;padding:4px 12px;border-radius:999px;margin:0 6px 6px 0}\ndiv.html code{display:block;font-family:inherit;font-size:14px;background:#DDEFE8;color:#1F7A63;font-weight:600;padding:8px 12px;border-radius:6px;margin-bottom:12px}\ndiv.html pre{white-space:pre-wrap;font-family:inherit;background:#F6F8FA;padding:14px;border-radius:8px}\ndiv.html a{color:#0F2238;font-weight:600}\ntextarea{font-family:inherit}\n"
         }
       },
-      "id": "491b2fe8-6bd4-407c-b9cd-36e4db7975b4",
+      "id": "077048c3-6abe-4761-9d8b-1d48a3b65962",
       "name": "Upload Invoice",
       "type": "n8n-nodes-base.formTrigger",
       "typeVersion": 2.2,
@@ -30,7 +36,8 @@
         0,
         300
       ],
-      "webhookId": "f7eb5050-cf5f-480c-8da6-5534edf3981b"
+      "webhookId": "8bb77df6-e959-4c1c-880c-78d5677971e5",
+      "notes": "Public form: <n8n URL>/form/audit"
     },
     {
       "parameters": {
@@ -38,7 +45,7 @@
         "binaryPropertyName": "={{ Object.keys($binary || {})[0] || 'Invoice_PDF' }}",
         "options": {}
       },
-      "id": "95e11a2b-fcff-4c1c-934c-5429c9b81e69",
+      "id": "79a7934b-7a42-4dc3-9572-a12013f4dfb2",
       "name": "Read PDF Text",
       "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1,
@@ -53,19 +60,19 @@
         "assignments": {
           "assignments": [
             {
-              "id": "9213fdf9-655a-4adb-a4e8-fe303dee3d81",
+              "id": "dbcbd7cc-c5f5-4e8d-a9ad-8a8bd31e9ec6",
               "name": "engine_url",
               "value": "https://alternate-glowing-serpent-8906-github-app.alternatefutures.ai",
               "type": "string"
             },
             {
-              "id": "86701c98-4071-47c3-b9f9-a28e901ea246",
+              "id": "cb6e29ae-9f45-463b-b013-28e1b1ff397b",
               "name": "as_of_date",
               "value": "",
               "type": "string"
             },
             {
-              "id": "1c449cf1-ddfd-4c47-a122-06819f22d630",
+              "id": "483405ec-3be0-44f8-91c1-0fccc1fc5b55",
               "name": "pdf_text",
               "value": "={{ ($json.text || '').slice(0, 12000) }}",
               "type": "string"
@@ -75,7 +82,7 @@
         "includeOtherFields": false,
         "options": {}
       },
-      "id": "c290c6fc-2071-4e82-a919-97800b6c4c23",
+      "id": "2ccf3695-be7e-4015-94fe-c86ef547f398",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -146,7 +153,7 @@
           "systemPromptTemplate": "You extract fields from an ocean-freight carrier demurrage/detention invoice. Copy values exactly as printed; do not calculate or infer anything. Dates must be YYYY-MM-DD. container_id is 4 letters + 7 digits with spaces and dashes removed. charge_start and charge_end are the first and last day of the billed charge period. Numbers without currency symbols or commas. If a field is not on the invoice, omit it. Never guess."
         }
       },
-      "id": "d65e4e93-b06d-4d5b-9c9e-9b7d5fe3b6d6",
+      "id": "7e8680b8-193c-4ef8-9d52-065343fc03be",
       "name": "AI: Read Invoice",
       "type": "@n8n/n8n-nodes-langchain.informationExtractor",
       "typeVersion": 1,
@@ -163,14 +170,20 @@
           "temperature": 0
         }
       },
-      "id": "9f79d528-68ff-41e8-9e6a-cb740252622f",
+      "id": "109893b9-8d78-4c1c-a50c-2af0e682c0fc",
       "name": "Groq (extract)",
       "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
       "typeVersion": 1,
       "position": [
         660,
         520
-      ]
+      ],
+      "credentials": {
+        "groqApi": {
+          "id": "",
+          "name": "Groq account"
+        }
+      }
     },
     {
       "parameters": {
@@ -183,7 +196,7 @@
           "timeout": 20000
         }
       },
-      "id": "0b881326-c1f1-4612-a4ba-803451d90cec",
+      "id": "adf1515d-106d-4257-a9b8-72192623d04b",
       "name": "Engine: Audit",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -206,7 +219,7 @@
           "maxIterations": 4
         }
       },
-      "id": "4db8d637-d2cb-4d05-9972-f0968ac0fafc",
+      "id": "6ab59908-7fdf-4a67-a5e1-f6c002612dce",
       "name": "AI Agent: Verify via MCP",
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 1.7,
@@ -223,21 +236,27 @@
           "temperature": 0
         }
       },
-      "id": "bd3fa70c-099d-4809-a7c0-6e1814b17c64",
+      "id": "529f62ba-9cee-45d1-b48f-9ef77c9493fe",
       "name": "Groq (agent)",
       "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
       "typeVersion": 1,
       "position": [
         1040,
         520
-      ]
+      ],
+      "credentials": {
+        "groqApi": {
+          "id": "",
+          "name": "Groq account"
+        }
+      }
     },
     {
       "parameters": {
         "endpointUrl": "https://alternate-glowing-serpent-8906-github-app.alternatefutures.ai/mcp",
         "serverTransport": "httpStreamable"
       },
-      "id": "680c3810-31e1-49ae-aaa9-c548137a7a05",
+      "id": "ab8ec4bb-0871-4ebf-8cb2-b18988cab2e8",
       "name": "MCP: DemurrageGuard Engine",
       "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
       "typeVersion": 1.1,
@@ -251,7 +270,7 @@
       "parameters": {
         "jsCode": "// Guard: the AI agent (via MCP) and the REST engine must agree. Code is the source of truth.\nconst rest = $('Engine: Audit').first().json;\nconst raw = (typeof $json.output === 'string') ? $json.output : '';\nlet guard = { status: 'unavailable',\n  note: 'AI agent cross-check unavailable; showing the deterministic engine result.' };\nif (rest.ok && raw) {\n  try {\n    const m = raw.match(/\\{[\\s\\S]*\\}/);\n    const a = JSON.parse(m ? m[0] : raw);\n    const same = Number(a.overcharge) === Number(rest.overcharge)\n              && Number(a.correct_days) === Number(rest.correct_days);\n    guard = same\n      ? { status: 'match', note: `AI agent (via MCP) and engine agree: ${rest.correct_days} chargeable days, difference $${rest.overcharge}.` }\n      : { status: 'mismatch', note: `AI agent said overcharge ${a.overcharge}, engine says ${rest.overcharge}. Using the engine: code is the source of truth.` };\n  } catch (e) { /* keep 'unavailable' */ }\n}\nif (!rest.ok && !rest.error) {\n  rest.error = { code: 'ENGINE_UNREACHABLE', message: 'The audit engine did not respond. Check the engine service, or enter the details manually.' };\n}\nconst icon = { match: '\\u2713', mismatch: '!', unavailable: 'i' }[guard.status];\nconst badge = `<code>${icon} Cross-check: ${guard.note}</code>`;\nreturn [{ json: { ...rest, guard, form_html: rest.ok ? badge + rest.verdict_form_html : '' } }];\n"
       },
-      "id": "f82902a2-0e5c-4807-b6f3-4a485049e906",
+      "id": "45492e95-4314-4da3-8211-6b6376d0b988",
       "name": "Guard: Cross-check",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -271,7 +290,7 @@
           },
           "conditions": [
             {
-              "id": "b3ff66bf-e39d-49fc-a77e-306b3e850778",
+              "id": "9ca361d4-1b98-4d26-bc93-71d8e69c2d62",
               "leftValue": "={{ $json.ok === true }}",
               "rightValue": "",
               "operator": {
@@ -286,7 +305,7 @@
         "looseTypeValidation": true,
         "options": {}
       },
-      "id": "b5a324b0-e37c-40ac-ae2d-0907fe23c5b3",
+      "id": "77bb951b-e0c4-4e53-838a-ebe4a9097946",
       "name": "Verified?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
@@ -354,11 +373,11 @@
         },
         "options": {
           "formTitle": "Check the invoice details",
-          "buttonLabel": "Re-run audit",
-          "customCss": ":root{--container-width:720px}\ndiv.html table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0 4px}\ndiv.html th{text-align:left;border-bottom:2px solid #9ca3af;padding:5px 6px;color:#374151}\ndiv.html td{padding:5px 6px;border-bottom:1px solid #e5e7eb;vertical-align:top;color:#374151}\ndiv.html tbody tr:nth-child(even) td{background:#f9fafb}\ndiv.html td b{color:#b45309}\ndiv.html td u{color:#15803d;text-decoration:none;font-weight:600}\ndiv.html td i{color:#6b7280;font-weight:600}\ndiv.html td em{color:#b91c1c;font-weight:700;font-style:normal}\ndiv.html h2{color:#b91c1c;font-size:26px;margin:4px 0 6px}\ndiv.html h3{color:#15803d;font-size:26px;margin:4px 0 6px}\ndiv.html h4{color:#1e3a8a;margin:16px 0 4px;font-size:15px}\ndiv.html p strong{display:inline-block;background:#fff4dc;color:#8a5a00;padding:3px 10px;border-radius:999px}\ndiv.html code{display:block;font-family:inherit;font-size:12px;background:#eef3fd;color:#1e3a8a;padding:6px 10px;border-radius:6px;margin-bottom:8px}\ndiv.html pre{white-space:pre-wrap;font-family:inherit;background:#f8f8f8;padding:12px;border-radius:8px}\n"
+          "buttonLabel": "Check again",
+          "customCss": "@font-face{font-family:\"Big Shoulders Display\";font-weight:800;font-display:swap;src:url(https://alternate-glowing-serpent-8906-github-app.alternatefutures.ai/fonts/big-shoulders-display-latin-800-normal.woff2) format(\"woff2\")}\n@font-face{font-family:\"Archivo\";font-weight:400;font-display:swap;src:url(https://alternate-glowing-serpent-8906-github-app.alternatefutures.ai/fonts/archivo-latin-400-normal.woff2) format(\"woff2\")}\n@font-face{font-family:\"Archivo\";font-weight:500 600;font-display:swap;src:url(https://alternate-glowing-serpent-8906-github-app.alternatefutures.ai/fonts/archivo-latin-600-normal.woff2) format(\"woff2\")}\n@font-face{font-family:\"Archivo\";font-weight:700;font-display:swap;src:url(https://alternate-glowing-serpent-8906-github-app.alternatefutures.ai/fonts/archivo-latin-700-normal.woff2) format(\"woff2\")}\n:root{--container-width:760px;--font-family:\"Archivo\",system-ui,sans-serif;--font-size-label:15px;--font-size-input:15px;\n--font-size-paragraph:15px;--color-background:#EDF1F4;--color-card-border:#D5DDE5;--color-card-shadow:rgba(15,34,56,.06);\n--color-header:#0F2238;--color-label:#0F2238;--color-input-border:#C3CDD7;--color-input-text:#0F2238;\n--color-focus-border:#0F2238;--color-submit-btn-bg:#F2B705;--color-submit-btn-text:#0F2238;--color-html-text:#2A3D55;\n--color-html-link:#0F2238;--border-radius-card:10px}\nbody{font-variant-numeric:tabular-nums}\nbody::before{content:\"DemurrageGuard\";display:block;background:#0F2238;color:#fff;font:800 24px/64px \"Big Shoulders Display\",Impact,sans-serif;padding:0 24px;margin:0 0 8px}\n.form-header h1{font:800 34px/1.05 \"Big Shoulders Display\",Impact,sans-serif;color:#0F2238;text-align:left}\n.form-header p{text-align:left}\nbutton#submit-btn,#submit-btn{font-weight:700;border-radius:6px}\n#submit-btn:hover{filter:brightness(1.06)}\ndiv.html{color:#2A3D55}\ndiv.html table{width:100%;border-collapse:collapse;font-size:14px;margin:12px 0 4px}\ndiv.html th{text-align:left;font-weight:600;color:#7C8FA3;border-bottom:1px solid #D5DDE5;padding:8px 8px}\ndiv.html td{padding:8px 8px;border-bottom:1px solid #E3E9EE;vertical-align:top;color:#2A3D55}\ndiv.html td b{color:#0F2238;font-weight:700}\ndiv.html td u{color:#1F7A63;text-decoration:none;font-weight:600}\ndiv.html td i{color:#7C8FA3;font-weight:600;font-style:normal}\ndiv.html td em{display:inline-block;font-style:normal;font-weight:700;color:#0F2238;background:#F2B705;padding:2px 8px 2px 12px;border-radius:3px;border-left:6px solid transparent;border-image:repeating-linear-gradient(-45deg,#0F2238 0 4px,#F2B705 4px 8px) 0 0 0 6px}\ndiv.html h2,div.html h3{font:800 44px/1 \"Big Shoulders Display\",Impact,sans-serif;margin:4px 0 10px}\ndiv.html h2{color:#C8102E}div.html h3{color:#1F7A63}\ndiv.html h4{font-size:16px;color:#0F2238;margin:20px 0 6px}\ndiv.html p strong{display:inline-block;background:#FFF3C9;color:#0F2238;font-weight:600;font-size:14px;padding:4px 12px;border-radius:999px;margin:0 6px 6px 0}\ndiv.html code{display:block;font-family:inherit;font-size:14px;background:#DDEFE8;color:#1F7A63;font-weight:600;padding:8px 12px;border-radius:6px;margin-bottom:12px}\ndiv.html pre{white-space:pre-wrap;font-family:inherit;background:#F6F8FA;padding:14px;border-radius:8px}\ndiv.html a{color:#0F2238;font-weight:600}\ntextarea{font-family:inherit}\n"
         }
       },
-      "id": "0c9a49cf-ce91-4fde-a25b-5d084733391b",
+      "id": "7ea0fbdb-ffdf-464f-867e-db959d7ec867",
       "name": "Human: Fix Details",
       "type": "n8n-nodes-base.form",
       "typeVersion": 1,
@@ -366,13 +385,13 @@
         1760,
         520
       ],
-      "webhookId": "45e189cb-9acf-404d-a2b8-8211eb7e8075"
+      "webhookId": "a784f3dc-f237-45e6-8225-9ce52ddf97f0"
     },
     {
       "parameters": {
         "jsCode": "// Merge the human's corrections over what the AI extracted.\nconst ai = $('AI: Read Invoice').first().json.output || {};\nconst f = $json;\nconst pick = (label) => (f[label] === undefined || f[label] === null || String(f[label]).trim() === '') ? undefined : f[label];\nconst fixed = { ...ai };\nconst map = { 'Carrier': 'carrier', 'Invoice number': 'invoice_number', 'Container number': 'container_id', 'Invoice date': 'invoice_date',\n  'Charge start': 'charge_start', 'Charge end': 'charge_end', 'Billed days': 'billed_days',\n  'Rate per day': 'rate_per_day', 'Total amount': 'total_amount' };\nfor (const [label, key] of Object.entries(map)) { const v = pick(label); if (v !== undefined) fixed[key] = v; }\nreturn [{ json: { invoice: fixed, as_of_date: $('Config').first().json.as_of_date } }];\n"
       },
-      "id": "28fe87ce-c823-4439-bc54-33a3e5f02e33",
+      "id": "d7c70633-3517-4df8-a379-378aac2d4cf3",
       "name": "Apply Fixes",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -392,7 +411,7 @@
           "timeout": 20000
         }
       },
-      "id": "30f5ffea-cb3b-4bb0-bad3-80b4c6475080",
+      "id": "6806fc23-43d8-4deb-a7f2-112383975a3d",
       "name": "Engine: Re-audit",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -416,7 +435,7 @@
           },
           "conditions": [
             {
-              "id": "eb810ea4-dea0-4f21-9d67-32ddc901dd6b",
+              "id": "ef1ba25c-f2d8-4c38-b73f-4d8424a37c68",
               "leftValue": "={{ $json.ok === true }}",
               "rightValue": "",
               "operator": {
@@ -431,7 +450,7 @@
         "looseTypeValidation": true,
         "options": {}
       },
-      "id": "0bfb2aa2-f478-49a9-a4b7-d1f28b44cb35",
+      "id": "959270a0-8ceb-497b-b1f5-280d03298518",
       "name": "Re-verified?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
@@ -443,13 +462,13 @@
     {
       "parameters": {
         "operation": "completion",
-        "completionTitle": "Could not verify this invoice",
+        "completionTitle": "This invoice can't be checked yet",
         "completionMessage": "={{ (($json.error && $json.error.message) || 'The audit engine is unavailable.') + ' Do not pay yet: forward the invoice to the logistics team for a manual check.' }}",
         "options": {
-          "customCss": ":root{--container-width:720px}\ndiv.html table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0 4px}\ndiv.html th{text-align:left;border-bottom:2px solid #9ca3af;padding:5px 6px;color:#374151}\ndiv.html td{padding:5px 6px;border-bottom:1px solid #e5e7eb;vertical-align:top;color:#374151}\ndiv.html tbody tr:nth-child(even) td{background:#f9fafb}\ndiv.html td b{color:#b45309}\ndiv.html td u{color:#15803d;text-decoration:none;font-weight:600}\ndiv.html td i{color:#6b7280;font-weight:600}\ndiv.html td em{color:#b91c1c;font-weight:700;font-style:normal}\ndiv.html h2{color:#b91c1c;font-size:26px;margin:4px 0 6px}\ndiv.html h3{color:#15803d;font-size:26px;margin:4px 0 6px}\ndiv.html h4{color:#1e3a8a;margin:16px 0 4px;font-size:15px}\ndiv.html p strong{display:inline-block;background:#fff4dc;color:#8a5a00;padding:3px 10px;border-radius:999px}\ndiv.html code{display:block;font-family:inherit;font-size:12px;background:#eef3fd;color:#1e3a8a;padding:6px 10px;border-radius:6px;margin-bottom:8px}\ndiv.html pre{white-space:pre-wrap;font-family:inherit;background:#f8f8f8;padding:12px;border-radius:8px}\n"
+          "customCss": "@font-face{font-family:\"Big Shoulders Display\";font-weight:800;font-display:swap;src:url(https://alternate-glowing-serpent-8906-github-app.alternatefutures.ai/fonts/big-shoulders-display-latin-800-normal.woff2) format(\"woff2\")}\n@font-face{font-family:\"Archivo\";font-weight:400;font-display:swap;src:url(https://alternate-glowing-serpent-8906-github-app.alternatefutures.ai/fonts/archivo-latin-400-normal.woff2) format(\"woff2\")}\n@font-face{font-family:\"Archivo\";font-weight:500 600;font-display:swap;src:url(https://alternate-glowing-serpent-8906-github-app.alternatefutures.ai/fonts/archivo-latin-600-normal.woff2) format(\"woff2\")}\n@font-face{font-family:\"Archivo\";font-weight:700;font-display:swap;src:url(https://alternate-glowing-serpent-8906-github-app.alternatefutures.ai/fonts/archivo-latin-700-normal.woff2) format(\"woff2\")}\n:root{--container-width:760px;--font-family:\"Archivo\",system-ui,sans-serif;--font-size-label:15px;--font-size-input:15px;\n--font-size-paragraph:15px;--color-background:#EDF1F4;--color-card-border:#D5DDE5;--color-card-shadow:rgba(15,34,56,.06);\n--color-header:#0F2238;--color-label:#0F2238;--color-input-border:#C3CDD7;--color-input-text:#0F2238;\n--color-focus-border:#0F2238;--color-submit-btn-bg:#F2B705;--color-submit-btn-text:#0F2238;--color-html-text:#2A3D55;\n--color-html-link:#0F2238;--border-radius-card:10px}\nbody{font-variant-numeric:tabular-nums}\nbody::before{content:\"DemurrageGuard\";display:block;background:#0F2238;color:#fff;font:800 24px/64px \"Big Shoulders Display\",Impact,sans-serif;padding:0 24px;margin:0 0 8px}\n.form-header h1{font:800 34px/1.05 \"Big Shoulders Display\",Impact,sans-serif;color:#0F2238;text-align:left}\n.form-header p{text-align:left}\nbutton#submit-btn,#submit-btn{font-weight:700;border-radius:6px}\n#submit-btn:hover{filter:brightness(1.06)}\ndiv.html{color:#2A3D55}\ndiv.html table{width:100%;border-collapse:collapse;font-size:14px;margin:12px 0 4px}\ndiv.html th{text-align:left;font-weight:600;color:#7C8FA3;border-bottom:1px solid #D5DDE5;padding:8px 8px}\ndiv.html td{padding:8px 8px;border-bottom:1px solid #E3E9EE;vertical-align:top;color:#2A3D55}\ndiv.html td b{color:#0F2238;font-weight:700}\ndiv.html td u{color:#1F7A63;text-decoration:none;font-weight:600}\ndiv.html td i{color:#7C8FA3;font-weight:600;font-style:normal}\ndiv.html td em{display:inline-block;font-style:normal;font-weight:700;color:#0F2238;background:#F2B705;padding:2px 8px 2px 12px;border-radius:3px;border-left:6px solid transparent;border-image:repeating-linear-gradient(-45deg,#0F2238 0 4px,#F2B705 4px 8px) 0 0 0 6px}\ndiv.html h2,div.html h3{font:800 44px/1 \"Big Shoulders Display\",Impact,sans-serif;margin:4px 0 10px}\ndiv.html h2{color:#C8102E}div.html h3{color:#1F7A63}\ndiv.html h4{font-size:16px;color:#0F2238;margin:20px 0 6px}\ndiv.html p strong{display:inline-block;background:#FFF3C9;color:#0F2238;font-weight:600;font-size:14px;padding:4px 12px;border-radius:999px;margin:0 6px 6px 0}\ndiv.html code{display:block;font-family:inherit;font-size:14px;background:#DDEFE8;color:#1F7A63;font-weight:600;padding:8px 12px;border-radius:6px;margin-bottom:12px}\ndiv.html pre{white-space:pre-wrap;font-family:inherit;background:#F6F8FA;padding:14px;border-radius:8px}\ndiv.html a{color:#0F2238;font-weight:600}\ntextarea{font-family:inherit}\n"
         }
       },
-      "id": "216a5bf5-f846-4fc8-b56f-9342e39927fb",
+      "id": "0598ae12-09ad-4773-bceb-aefe52a54eaa",
       "name": "Cannot Verify",
       "type": "n8n-nodes-base.form",
       "typeVersion": 1,
@@ -457,13 +476,13 @@
         2640,
         720
       ],
-      "webhookId": "e6189173-4ca6-4cfd-ba5c-11ab16cbfaff"
+      "webhookId": "4c72960d-f68d-4900-a046-defdb7ad12b3"
     },
     {
       "parameters": {
         "jsCode": "// Single place the verified audit lives, whichever path it came from.\nconst r = $json;\nif (!r.guard) {\n  r.guard = { status: 'human_corrected', note: 'Audited after human corrections to the extracted fields.' };\n  r.form_html = `<code>i ${r.guard.note}</code>` + r.verdict_form_html;\n}\nreturn [{ json: r }];\n"
       },
-      "id": "af494ade-b30d-42c9-910b-e3e9e66c0be1",
+      "id": "e028f35f-3131-4988-bed9-3fe865af6d13",
       "name": "Verdict Ready",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -514,11 +533,11 @@
         },
         "options": {
           "formTitle": "Verdict: your call",
-          "buttonLabel": "Submit decision",
-          "customCss": ":root{--container-width:720px}\ndiv.html table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0 4px}\ndiv.html th{text-align:left;border-bottom:2px solid #9ca3af;padding:5px 6px;color:#374151}\ndiv.html td{padding:5px 6px;border-bottom:1px solid #e5e7eb;vertical-align:top;color:#374151}\ndiv.html tbody tr:nth-child(even) td{background:#f9fafb}\ndiv.html td b{color:#b45309}\ndiv.html td u{color:#15803d;text-decoration:none;font-weight:600}\ndiv.html td i{color:#6b7280;font-weight:600}\ndiv.html td em{color:#b91c1c;font-weight:700;font-style:normal}\ndiv.html h2{color:#b91c1c;font-size:26px;margin:4px 0 6px}\ndiv.html h3{color:#15803d;font-size:26px;margin:4px 0 6px}\ndiv.html h4{color:#1e3a8a;margin:16px 0 4px;font-size:15px}\ndiv.html p strong{display:inline-block;background:#fff4dc;color:#8a5a00;padding:3px 10px;border-radius:999px}\ndiv.html code{display:block;font-family:inherit;font-size:12px;background:#eef3fd;color:#1e3a8a;padding:6px 10px;border-radius:6px;margin-bottom:8px}\ndiv.html pre{white-space:pre-wrap;font-family:inherit;background:#f8f8f8;padding:12px;border-radius:8px}\n"
+          "buttonLabel": "Confirm decision",
+          "customCss": "@font-face{font-family:\"Big Shoulders Display\";font-weight:800;font-display:swap;src:url(https://alternate-glowing-serpent-8906-github-app.alternatefutures.ai/fonts/big-shoulders-display-latin-800-normal.woff2) format(\"woff2\")}\n@font-face{font-family:\"Archivo\";font-weight:400;font-display:swap;src:url(https://alternate-glowing-serpent-8906-github-app.alternatefutures.ai/fonts/archivo-latin-400-normal.woff2) format(\"woff2\")}\n@font-face{font-family:\"Archivo\";font-weight:500 600;font-display:swap;src:url(https://alternate-glowing-serpent-8906-github-app.alternatefutures.ai/fonts/archivo-latin-600-normal.woff2) format(\"woff2\")}\n@font-face{font-family:\"Archivo\";font-weight:700;font-display:swap;src:url(https://alternate-glowing-serpent-8906-github-app.alternatefutures.ai/fonts/archivo-latin-700-normal.woff2) format(\"woff2\")}\n:root{--container-width:760px;--font-family:\"Archivo\",system-ui,sans-serif;--font-size-label:15px;--font-size-input:15px;\n--font-size-paragraph:15px;--color-background:#EDF1F4;--color-card-border:#D5DDE5;--color-card-shadow:rgba(15,34,56,.06);\n--color-header:#0F2238;--color-label:#0F2238;--color-input-border:#C3CDD7;--color-input-text:#0F2238;\n--color-focus-border:#0F2238;--color-submit-btn-bg:#F2B705;--color-submit-btn-text:#0F2238;--color-html-text:#2A3D55;\n--color-html-link:#0F2238;--border-radius-card:10px}\nbody{font-variant-numeric:tabular-nums}\nbody::before{content:\"DemurrageGuard\";display:block;background:#0F2238;color:#fff;font:800 24px/64px \"Big Shoulders Display\",Impact,sans-serif;padding:0 24px;margin:0 0 8px}\n.form-header h1{font:800 34px/1.05 \"Big Shoulders Display\",Impact,sans-serif;color:#0F2238;text-align:left}\n.form-header p{text-align:left}\nbutton#submit-btn,#submit-btn{font-weight:700;border-radius:6px}\n#submit-btn:hover{filter:brightness(1.06)}\ndiv.html{color:#2A3D55}\ndiv.html table{width:100%;border-collapse:collapse;font-size:14px;margin:12px 0 4px}\ndiv.html th{text-align:left;font-weight:600;color:#7C8FA3;border-bottom:1px solid #D5DDE5;padding:8px 8px}\ndiv.html td{padding:8px 8px;border-bottom:1px solid #E3E9EE;vertical-align:top;color:#2A3D55}\ndiv.html td b{color:#0F2238;font-weight:700}\ndiv.html td u{color:#1F7A63;text-decoration:none;font-weight:600}\ndiv.html td i{color:#7C8FA3;font-weight:600;font-style:normal}\ndiv.html td em{display:inline-block;font-style:normal;font-weight:700;color:#0F2238;background:#F2B705;padding:2px 8px 2px 12px;border-radius:3px;border-left:6px solid transparent;border-image:repeating-linear-gradient(-45deg,#0F2238 0 4px,#F2B705 4px 8px) 0 0 0 6px}\ndiv.html h2,div.html h3{font:800 44px/1 \"Big Shoulders Display\",Impact,sans-serif;margin:4px 0 10px}\ndiv.html h2{color:#C8102E}div.html h3{color:#1F7A63}\ndiv.html h4{font-size:16px;color:#0F2238;margin:20px 0 6px}\ndiv.html p strong{display:inline-block;background:#FFF3C9;color:#0F2238;font-weight:600;font-size:14px;padding:4px 12px;border-radius:999px;margin:0 6px 6px 0}\ndiv.html code{display:block;font-family:inherit;font-size:14px;background:#DDEFE8;color:#1F7A63;font-weight:600;padding:8px 12px;border-radius:6px;margin-bottom:12px}\ndiv.html pre{white-space:pre-wrap;font-family:inherit;background:#F6F8FA;padding:14px;border-radius:8px}\ndiv.html a{color:#0F2238;font-weight:600}\ntextarea{font-family:inherit}\n"
         }
       },
-      "id": "6edd1dff-7190-48fb-b1b6-cc37881519e9",
+      "id": "e96573d7-7369-4a7f-afe5-c3781b7723f3",
       "name": "Human: Decide",
       "type": "n8n-nodes-base.form",
       "typeVersion": 1,
@@ -526,7 +545,7 @@
         2860,
         300
       ],
-      "webhookId": "8a2992d4-fb56-49eb-a59e-cb478b9ec2a9",
+      "webhookId": "1e6bd9f8-26d3-4d12-a7de-05e72811e1ab",
       "notes": "HUMAN GATE 1: the business decision the AI cannot make."
     },
     {
@@ -543,7 +562,7 @@
                 },
                 "conditions": [
                   {
-                    "id": "c283b282-1815-4d6e-b3fb-caf5c00359aa",
+                    "id": "ba6ee7cf-7ba5-44f3-b356-865da6aa3a98",
                     "leftValue": "={{ $json.Decision }}",
                     "rightValue": "Pay invoice",
                     "operator": {
@@ -567,7 +586,7 @@
                 },
                 "conditions": [
                   {
-                    "id": "e441ee5e-f2c6-4e8c-94d3-a27327ed45ba",
+                    "id": "feef5ab9-b2af-4f9a-817a-70a5e28c52a2",
                     "leftValue": "={{ $json.Decision }}",
                     "rightValue": "Dispute in full",
                     "operator": {
@@ -591,7 +610,7 @@
                 },
                 "conditions": [
                   {
-                    "id": "fa7a3507-b3da-4cd5-8622-e64009bf290d",
+                    "id": "f748ac01-7fed-4062-bf52-27b84186d03c",
                     "leftValue": "={{ $json.Decision }}",
                     "rightValue": "Partial dispute",
                     "operator": {
@@ -610,7 +629,7 @@
         "looseTypeValidation": true,
         "options": {}
       },
-      "id": "88dfeb96-00e1-4b19-8748-7142d38c616c",
+      "id": "9fcfa1af-2909-4bdd-97b3-197f4bf77932",
       "name": "Route Decision",
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.2,
@@ -630,7 +649,7 @@
           "timeout": 10000
         }
       },
-      "id": "6a5de9a8-e401-47b5-ad8c-32c54ad1d57c",
+      "id": "3ce4343c-c41b-4bde-ae67-3f8d2c635007",
       "name": "Log: Pay",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -646,10 +665,10 @@
         "completionTitle": "Payment approved",
         "completionMessage": "={{ 'Invoice ' + ($('Verdict Ready').first().json.invoice.invoice_number || '') + ' approved for payment: $' + $('Verdict Ready').first().json.billed_amount + '. Your decision is logged in the audit trail.' }}",
         "options": {
-          "customCss": ":root{--container-width:720px}\ndiv.html table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0 4px}\ndiv.html th{text-align:left;border-bottom:2px solid #9ca3af;padding:5px 6px;color:#374151}\ndiv.html td{padding:5px 6px;border-bottom:1px solid #e5e7eb;vertical-align:top;color:#374151}\ndiv.html tbody tr:nth-child(even) td{background:#f9fafb}\ndiv.html td b{color:#b45309}\ndiv.html td u{color:#15803d;text-decoration:none;font-weight:600}\ndiv.html td i{color:#6b7280;font-weight:600}\ndiv.html td em{color:#b91c1c;font-weight:700;font-style:normal}\ndiv.html h2{color:#b91c1c;font-size:26px;margin:4px 0 6px}\ndiv.html h3{color:#15803d;font-size:26px;margin:4px 0 6px}\ndiv.html h4{color:#1e3a8a;margin:16px 0 4px;font-size:15px}\ndiv.html p strong{display:inline-block;background:#fff4dc;color:#8a5a00;padding:3px 10px;border-radius:999px}\ndiv.html code{display:block;font-family:inherit;font-size:12px;background:#eef3fd;color:#1e3a8a;padding:6px 10px;border-radius:6px;margin-bottom:8px}\ndiv.html pre{white-space:pre-wrap;font-family:inherit;background:#f8f8f8;padding:12px;border-radius:8px}\n"
+          "customCss": "@font-face{font-family:\"Big Shoulders Display\";font-weight:800;font-display:swap;src:url(https://alternate-glowing-serpent-8906-github-app.alternatefutures.ai/fonts/big-shoulders-display-latin-800-normal.woff2) format(\"woff2\")}\n@font-face{font-family:\"Archivo\";font-weight:400;font-display:swap;src:url(https://alternate-glowing-serpent-8906-github-app.alternatefutures.ai/fonts/archivo-latin-400-normal.woff2) format(\"woff2\")}\n@font-face{font-family:\"Archivo\";font-weight:500 600;font-display:swap;src:url(https://alternate-glowing-serpent-8906-github-app.alternatefutures.ai/fonts/archivo-latin-600-normal.woff2) format(\"woff2\")}\n@font-face{font-family:\"Archivo\";font-weight:700;font-display:swap;src:url(https://alternate-glowing-serpent-8906-github-app.alternatefutures.ai/fonts/archivo-latin-700-normal.woff2) format(\"woff2\")}\n:root{--container-width:760px;--font-family:\"Archivo\",system-ui,sans-serif;--font-size-label:15px;--font-size-input:15px;\n--font-size-paragraph:15px;--color-background:#EDF1F4;--color-card-border:#D5DDE5;--color-card-shadow:rgba(15,34,56,.06);\n--color-header:#0F2238;--color-label:#0F2238;--color-input-border:#C3CDD7;--color-input-text:#0F2238;\n--color-focus-border:#0F2238;--color-submit-btn-bg:#F2B705;--color-submit-btn-text:#0F2238;--color-html-text:#2A3D55;\n--color-html-link:#0F2238;--border-radius-card:10px}\nbody{font-variant-numeric:tabular-nums}\nbody::before{content:\"DemurrageGuard\";display:block;background:#0F2238;color:#fff;font:800 24px/64px \"Big Shoulders Display\",Impact,sans-serif;padding:0 24px;margin:0 0 8px}\n.form-header h1{font:800 34px/1.05 \"Big Shoulders Display\",Impact,sans-serif;color:#0F2238;text-align:left}\n.form-header p{text-align:left}\nbutton#submit-btn,#submit-btn{font-weight:700;border-radius:6px}\n#submit-btn:hover{filter:brightness(1.06)}\ndiv.html{color:#2A3D55}\ndiv.html table{width:100%;border-collapse:collapse;font-size:14px;margin:12px 0 4px}\ndiv.html th{text-align:left;font-weight:600;color:#7C8FA3;border-bottom:1px solid #D5DDE5;padding:8px 8px}\ndiv.html td{padding:8px 8px;border-bottom:1px solid #E3E9EE;vertical-align:top;color:#2A3D55}\ndiv.html td b{color:#0F2238;font-weight:700}\ndiv.html td u{color:#1F7A63;text-decoration:none;font-weight:600}\ndiv.html td i{color:#7C8FA3;font-weight:600;font-style:normal}\ndiv.html td em{display:inline-block;font-style:normal;font-weight:700;color:#0F2238;background:#F2B705;padding:2px 8px 2px 12px;border-radius:3px;border-left:6px solid transparent;border-image:repeating-linear-gradient(-45deg,#0F2238 0 4px,#F2B705 4px 8px) 0 0 0 6px}\ndiv.html h2,div.html h3{font:800 44px/1 \"Big Shoulders Display\",Impact,sans-serif;margin:4px 0 10px}\ndiv.html h2{color:#C8102E}div.html h3{color:#1F7A63}\ndiv.html h4{font-size:16px;color:#0F2238;margin:20px 0 6px}\ndiv.html p strong{display:inline-block;background:#FFF3C9;color:#0F2238;font-weight:600;font-size:14px;padding:4px 12px;border-radius:999px;margin:0 6px 6px 0}\ndiv.html code{display:block;font-family:inherit;font-size:14px;background:#DDEFE8;color:#1F7A63;font-weight:600;padding:8px 12px;border-radius:6px;margin-bottom:12px}\ndiv.html pre{white-space:pre-wrap;font-family:inherit;background:#F6F8FA;padding:14px;border-radius:8px}\ndiv.html a{color:#0F2238;font-weight:600}\ntextarea{font-family:inherit}\n"
         }
       },
-      "id": "7b7c7f8e-cdf0-4156-84fa-a0d760470ada",
+      "id": "7da11b3e-ac12-4808-be92-a1c542115a47",
       "name": "Payment Approved",
       "type": "n8n-nodes-base.form",
       "typeVersion": 1,
@@ -657,7 +676,7 @@
         3520,
         120
       ],
-      "webhookId": "1b686b5f-6b4a-4880-99ad-c75e16710f7f"
+      "webhookId": "dcb9a63e-a047-4b49-93ac-bd1956880e3c"
     },
     {
       "parameters": {
@@ -670,7 +689,7 @@
           "timeout": 20000
         }
       },
-      "id": "13099d34-81b3-42a2-b007-1c974de8f84a",
+      "id": "2e0b1333-4715-4623-92b9-b0e7cf913d01",
       "name": "Engine: Letter Facts",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -688,7 +707,7 @@
         "promptType": "define",
         "text": "=You write dispute letters for a logistics manager. Write a clear, professional email to the carrier's billing team.\n\nRULES:\n- Use ONLY the facts below. Do not add any number, amount or date that is not in FACTS.\n- decision 'partial' = warm, relationship-first tone; we pay part and ask for a credit of disputed_amount_text.\n- decision 'dispute_full' = firm, factual tone; we dispute disputed_amount_text.\n- If fmc_valid is false, state that the invoice was issued outside the FMC 30-day billing window.\n- Mention the manager's reason only if it helps the relationship; never admit fault beyond it.\n- Sign as Sara Malik, Logistics Manager, Northwind Imports Inc.\n- Output only the email: a Subject line, then the body. No commentary.\n\nFACTS:\n{{ JSON.stringify($json.facts, null, 2) }}\n\nReference structure (you may improve wording, not facts):\n{{ $json.template_letter }}"
       },
-      "id": "90daa2c4-f3d3-4576-842f-3ddf01068641",
+      "id": "a73ffa2c-e633-44ea-b7dd-4b2225748d2f",
       "name": "AI: Draft Letter",
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.5,
@@ -705,14 +724,20 @@
           "temperature": 0
         }
       },
-      "id": "97413a4e-37a9-46ca-aee0-f19d4d21f9c0",
+      "id": "2b8a6cb4-a9be-4468-9df6-730d74e96005",
       "name": "Groq (letter)",
       "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
       "typeVersion": 1,
       "position": [
         3520,
         620
-      ]
+      ],
+      "credentials": {
+        "groqApi": {
+          "id": "",
+          "name": "Groq account"
+        }
+      }
     },
     {
       "parameters": {
@@ -725,7 +750,7 @@
           "timeout": 20000
         }
       },
-      "id": "44db31ef-4859-4482-9a05-a03fec0fc0d5",
+      "id": "63dfea56-9ca9-4d47-acf0-616ce9be8d7e",
       "name": "Engine: Check Letter",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -746,7 +771,7 @@
             {
               "fieldType": "html",
               "elementName": "letter_check",
-              "html": "={{ '<code>' + ($json.source === 'ai_draft' ? '\\u2713 ' : '! ') + ($json.guard_note || '') + '</code><p>Edit the letter below if you want. Nothing is sent until you approve it.</p>' }}"
+              "html": "={{ ($json.source === 'ai_draft' ? '<code>\\u2713 ' + ($json.guard_note || '') + '</code>' : '<p><strong>' + ($json.guard_note || '') + '</strong></p>') + '<p>Edit the letter below if you want. Nothing is sent until you approve it.</p>' }}"
             },
             {
               "fieldLabel": "Final letter",
@@ -759,10 +784,10 @@
         "options": {
           "formTitle": "Review and sign off the dispute letter",
           "buttonLabel": "Approve letter",
-          "customCss": ":root{--container-width:720px}\ndiv.html table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0 4px}\ndiv.html th{text-align:left;border-bottom:2px solid #9ca3af;padding:5px 6px;color:#374151}\ndiv.html td{padding:5px 6px;border-bottom:1px solid #e5e7eb;vertical-align:top;color:#374151}\ndiv.html tbody tr:nth-child(even) td{background:#f9fafb}\ndiv.html td b{color:#b45309}\ndiv.html td u{color:#15803d;text-decoration:none;font-weight:600}\ndiv.html td i{color:#6b7280;font-weight:600}\ndiv.html td em{color:#b91c1c;font-weight:700;font-style:normal}\ndiv.html h2{color:#b91c1c;font-size:26px;margin:4px 0 6px}\ndiv.html h3{color:#15803d;font-size:26px;margin:4px 0 6px}\ndiv.html h4{color:#1e3a8a;margin:16px 0 4px;font-size:15px}\ndiv.html p strong{display:inline-block;background:#fff4dc;color:#8a5a00;padding:3px 10px;border-radius:999px}\ndiv.html code{display:block;font-family:inherit;font-size:12px;background:#eef3fd;color:#1e3a8a;padding:6px 10px;border-radius:6px;margin-bottom:8px}\ndiv.html pre{white-space:pre-wrap;font-family:inherit;background:#f8f8f8;padding:12px;border-radius:8px}\ntextarea{min-height:420px}"
+          "customCss": "@font-face{font-family:\"Big Shoulders Display\";font-weight:800;font-display:swap;src:url(https://alternate-glowing-serpent-8906-github-app.alternatefutures.ai/fonts/big-shoulders-display-latin-800-normal.woff2) format(\"woff2\")}\n@font-face{font-family:\"Archivo\";font-weight:400;font-display:swap;src:url(https://alternate-glowing-serpent-8906-github-app.alternatefutures.ai/fonts/archivo-latin-400-normal.woff2) format(\"woff2\")}\n@font-face{font-family:\"Archivo\";font-weight:500 600;font-display:swap;src:url(https://alternate-glowing-serpent-8906-github-app.alternatefutures.ai/fonts/archivo-latin-600-normal.woff2) format(\"woff2\")}\n@font-face{font-family:\"Archivo\";font-weight:700;font-display:swap;src:url(https://alternate-glowing-serpent-8906-github-app.alternatefutures.ai/fonts/archivo-latin-700-normal.woff2) format(\"woff2\")}\n:root{--container-width:760px;--font-family:\"Archivo\",system-ui,sans-serif;--font-size-label:15px;--font-size-input:15px;\n--font-size-paragraph:15px;--color-background:#EDF1F4;--color-card-border:#D5DDE5;--color-card-shadow:rgba(15,34,56,.06);\n--color-header:#0F2238;--color-label:#0F2238;--color-input-border:#C3CDD7;--color-input-text:#0F2238;\n--color-focus-border:#0F2238;--color-submit-btn-bg:#F2B705;--color-submit-btn-text:#0F2238;--color-html-text:#2A3D55;\n--color-html-link:#0F2238;--border-radius-card:10px}\nbody{font-variant-numeric:tabular-nums}\nbody::before{content:\"DemurrageGuard\";display:block;background:#0F2238;color:#fff;font:800 24px/64px \"Big Shoulders Display\",Impact,sans-serif;padding:0 24px;margin:0 0 8px}\n.form-header h1{font:800 34px/1.05 \"Big Shoulders Display\",Impact,sans-serif;color:#0F2238;text-align:left}\n.form-header p{text-align:left}\nbutton#submit-btn,#submit-btn{font-weight:700;border-radius:6px}\n#submit-btn:hover{filter:brightness(1.06)}\ndiv.html{color:#2A3D55}\ndiv.html table{width:100%;border-collapse:collapse;font-size:14px;margin:12px 0 4px}\ndiv.html th{text-align:left;font-weight:600;color:#7C8FA3;border-bottom:1px solid #D5DDE5;padding:8px 8px}\ndiv.html td{padding:8px 8px;border-bottom:1px solid #E3E9EE;vertical-align:top;color:#2A3D55}\ndiv.html td b{color:#0F2238;font-weight:700}\ndiv.html td u{color:#1F7A63;text-decoration:none;font-weight:600}\ndiv.html td i{color:#7C8FA3;font-weight:600;font-style:normal}\ndiv.html td em{display:inline-block;font-style:normal;font-weight:700;color:#0F2238;background:#F2B705;padding:2px 8px 2px 12px;border-radius:3px;border-left:6px solid transparent;border-image:repeating-linear-gradient(-45deg,#0F2238 0 4px,#F2B705 4px 8px) 0 0 0 6px}\ndiv.html h2,div.html h3{font:800 44px/1 \"Big Shoulders Display\",Impact,sans-serif;margin:4px 0 10px}\ndiv.html h2{color:#C8102E}div.html h3{color:#1F7A63}\ndiv.html h4{font-size:16px;color:#0F2238;margin:20px 0 6px}\ndiv.html p strong{display:inline-block;background:#FFF3C9;color:#0F2238;font-weight:600;font-size:14px;padding:4px 12px;border-radius:999px;margin:0 6px 6px 0}\ndiv.html code{display:block;font-family:inherit;font-size:14px;background:#DDEFE8;color:#1F7A63;font-weight:600;padding:8px 12px;border-radius:6px;margin-bottom:12px}\ndiv.html pre{white-space:pre-wrap;font-family:inherit;background:#F6F8FA;padding:14px;border-radius:8px}\ndiv.html a{color:#0F2238;font-weight:600}\ntextarea{font-family:inherit}\ntextarea{min-height:420px}"
         }
       },
-      "id": "f7b3648f-96a6-494f-9734-67ef87697a5b",
+      "id": "950d3b4c-5a41-41c8-87fc-c30997ae30a4",
       "name": "Human: Review Letter",
       "type": "n8n-nodes-base.form",
       "typeVersion": 1,
@@ -770,14 +795,14 @@
         3960,
         400
       ],
-      "webhookId": "10a2f30f-7ad9-4d5e-bf8e-fac40125c14f",
+      "webhookId": "aaef9346-151e-423b-851d-ff2ea0ebea30",
       "notes": "HUMAN GATE 2: nothing leaves without a human sign-off."
     },
     {
       "parameters": {
         "jsCode": "const chk = $('Engine: Check Letter').first().json;\nconst norm = (t) => String(t || '').replace(/\\r/g, '').trim();\nconst approved = norm($json['Final letter']) || norm(chk.final_letter);\nconst edited = approved !== norm(chk.final_letter);\nreturn [{ json: {\n  final_letter: approved,\n  letter_source: edited ? 'human_edited' : chk.source,\n  disputed_amount: chk.facts ? chk.facts.disputed_amount : null,\n} }];\n"
       },
-      "id": "82508a8e-5cbb-4198-8516-c7679cef6e97",
+      "id": "b3a6297b-17e3-43bb-a121-c3c096018dad",
       "name": "Finalize Letter",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -797,7 +822,7 @@
           "timeout": 10000
         }
       },
-      "id": "a465c54e-8053-4be4-bd08-ce055685b483",
+      "id": "0288488e-f9f7-4b62-a49d-a0d2c43dd6a5",
       "name": "Log: Dispute",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -813,10 +838,10 @@
         "completionTitle": "Dispute letter approved",
         "completionMessage": "={{ 'Approved by you and logged in the audit trail. Final letter:\\n\\n' + $('Finalize Letter').first().json.final_letter }}",
         "options": {
-          "customCss": ":root{--container-width:720px}\ndiv.html table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0 4px}\ndiv.html th{text-align:left;border-bottom:2px solid #9ca3af;padding:5px 6px;color:#374151}\ndiv.html td{padding:5px 6px;border-bottom:1px solid #e5e7eb;vertical-align:top;color:#374151}\ndiv.html tbody tr:nth-child(even) td{background:#f9fafb}\ndiv.html td b{color:#b45309}\ndiv.html td u{color:#15803d;text-decoration:none;font-weight:600}\ndiv.html td i{color:#6b7280;font-weight:600}\ndiv.html td em{color:#b91c1c;font-weight:700;font-style:normal}\ndiv.html h2{color:#b91c1c;font-size:26px;margin:4px 0 6px}\ndiv.html h3{color:#15803d;font-size:26px;margin:4px 0 6px}\ndiv.html h4{color:#1e3a8a;margin:16px 0 4px;font-size:15px}\ndiv.html p strong{display:inline-block;background:#fff4dc;color:#8a5a00;padding:3px 10px;border-radius:999px}\ndiv.html code{display:block;font-family:inherit;font-size:12px;background:#eef3fd;color:#1e3a8a;padding:6px 10px;border-radius:6px;margin-bottom:8px}\ndiv.html pre{white-space:pre-wrap;font-family:inherit;background:#f8f8f8;padding:12px;border-radius:8px}\n"
+          "customCss": "@font-face{font-family:\"Big Shoulders Display\";font-weight:800;font-display:swap;src:url(https://alternate-glowing-serpent-8906-github-app.alternatefutures.ai/fonts/big-shoulders-display-latin-800-normal.woff2) format(\"woff2\")}\n@font-face{font-family:\"Archivo\";font-weight:400;font-display:swap;src:url(https://alternate-glowing-serpent-8906-github-app.alternatefutures.ai/fonts/archivo-latin-400-normal.woff2) format(\"woff2\")}\n@font-face{font-family:\"Archivo\";font-weight:500 600;font-display:swap;src:url(https://alternate-glowing-serpent-8906-github-app.alternatefutures.ai/fonts/archivo-latin-600-normal.woff2) format(\"woff2\")}\n@font-face{font-family:\"Archivo\";font-weight:700;font-display:swap;src:url(https://alternate-glowing-serpent-8906-github-app.alternatefutures.ai/fonts/archivo-latin-700-normal.woff2) format(\"woff2\")}\n:root{--container-width:760px;--font-family:\"Archivo\",system-ui,sans-serif;--font-size-label:15px;--font-size-input:15px;\n--font-size-paragraph:15px;--color-background:#EDF1F4;--color-card-border:#D5DDE5;--color-card-shadow:rgba(15,34,56,.06);\n--color-header:#0F2238;--color-label:#0F2238;--color-input-border:#C3CDD7;--color-input-text:#0F2238;\n--color-focus-border:#0F2238;--color-submit-btn-bg:#F2B705;--color-submit-btn-text:#0F2238;--color-html-text:#2A3D55;\n--color-html-link:#0F2238;--border-radius-card:10px}\nbody{font-variant-numeric:tabular-nums}\nbody::before{content:\"DemurrageGuard\";display:block;background:#0F2238;color:#fff;font:800 24px/64px \"Big Shoulders Display\",Impact,sans-serif;padding:0 24px;margin:0 0 8px}\n.form-header h1{font:800 34px/1.05 \"Big Shoulders Display\",Impact,sans-serif;color:#0F2238;text-align:left}\n.form-header p{text-align:left}\nbutton#submit-btn,#submit-btn{font-weight:700;border-radius:6px}\n#submit-btn:hover{filter:brightness(1.06)}\ndiv.html{color:#2A3D55}\ndiv.html table{width:100%;border-collapse:collapse;font-size:14px;margin:12px 0 4px}\ndiv.html th{text-align:left;font-weight:600;color:#7C8FA3;border-bottom:1px solid #D5DDE5;padding:8px 8px}\ndiv.html td{padding:8px 8px;border-bottom:1px solid #E3E9EE;vertical-align:top;color:#2A3D55}\ndiv.html td b{color:#0F2238;font-weight:700}\ndiv.html td u{color:#1F7A63;text-decoration:none;font-weight:600}\ndiv.html td i{color:#7C8FA3;font-weight:600;font-style:normal}\ndiv.html td em{display:inline-block;font-style:normal;font-weight:700;color:#0F2238;background:#F2B705;padding:2px 8px 2px 12px;border-radius:3px;border-left:6px solid transparent;border-image:repeating-linear-gradient(-45deg,#0F2238 0 4px,#F2B705 4px 8px) 0 0 0 6px}\ndiv.html h2,div.html h3{font:800 44px/1 \"Big Shoulders Display\",Impact,sans-serif;margin:4px 0 10px}\ndiv.html h2{color:#C8102E}div.html h3{color:#1F7A63}\ndiv.html h4{font-size:16px;color:#0F2238;margin:20px 0 6px}\ndiv.html p strong{display:inline-block;background:#FFF3C9;color:#0F2238;font-weight:600;font-size:14px;padding:4px 12px;border-radius:999px;margin:0 6px 6px 0}\ndiv.html code{display:block;font-family:inherit;font-size:14px;background:#DDEFE8;color:#1F7A63;font-weight:600;padding:8px 12px;border-radius:6px;margin-bottom:12px}\ndiv.html pre{white-space:pre-wrap;font-family:inherit;background:#F6F8FA;padding:14px;border-radius:8px}\ndiv.html a{color:#0F2238;font-weight:600}\ntextarea{font-family:inherit}\n"
         }
       },
-      "id": "bde35aa3-274f-4159-85b1-b16cfd18b213",
+      "id": "db145638-afd2-4d88-a915-edbc490ba7be",
       "name": "Done",
       "type": "n8n-nodes-base.form",
       "typeVersion": 1,
@@ -824,7 +849,7 @@
         4620,
         400
       ],
-      "webhookId": "c72c8e97-63f8-4a94-b636-e48234d66e43"
+      "webhookId": "8c04ca7c-4186-4cd0-9722-9631cb4cf1b9"
     },
     {
       "parameters": {
@@ -833,7 +858,7 @@
         "width": 520,
         "color": 4
       },
-      "id": "734cf9dd-ed1f-462e-a19d-8e37b4c25988",
+      "id": "c5b10ee3-8bd0-47fc-a79e-5cc9167a59bd",
       "name": "Sticky Note",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,

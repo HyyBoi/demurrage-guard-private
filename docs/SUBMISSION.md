@@ -24,8 +24,8 @@ Fill the blanks, export to PDF, open every link from a logged-out private window
   (FastAPI) exposed as REST and as an MCP server, Groq (openai/gpt-oss-120b), deployed on Alternate Clouds.
 
 ## 3. Links
-- Live app (n8n form): https://n8n-j3bs-app.alternatefutures.ai/form/f7eb5050-cf5f-480c-8da6-5534edf3981b
-- Engine (verdicts, decision log, MCP): https://alternate-glowing-serpent-8906-github-app.alternatefutures.ai
+- Live app (n8n form): https://n8n-j3bs-app.alternatefutures.ai/form/audit
+- Landing page, sample verdicts, decision log, MCP server: https://alternate-glowing-serpent-8906-github-app.alternatefutures.ai
 - GitHub: https://github.com/HyyBoi/demurrage-guard (workflow JSON in `n8n/`)
 - Demo video: ____ (unlisted YouTube or Drive "anyone with the link")
 - LinkedIn post: ____   Reshare: ____

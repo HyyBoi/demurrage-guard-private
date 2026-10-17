@@ -9,10 +9,11 @@ import uuid
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from engine.logic import FORM_CSS  # noqa: E402
+from engine.logic import FORM_CSS as _FORM_CSS  # noqa: E402
 
 ENGINE_URL = (sys.argv[1] if len(sys.argv) > 1 else "https://alternate-glowing-serpent-8906-github-app.alternatefutures.ai").rstrip("/")
 OUT = Path(__file__).resolve().parent.parent / "n8n" / "demurrage-guard.json"
+FORM_CSS = _FORM_CSS.replace("__FONT_BASE__", ENGINE_URL)
 GROQ_MODEL = "openai/gpt-oss-120b"  # llama-3.3-70b-versatile was retired by Groq on 2026-08-16
 
 nodes: list[dict] = []
@@ -40,7 +41,8 @@ def link(src, dst, out=0, kind="main", inp=0):
 
 def groq(name, pos):
     return node(name, "@n8n/n8n-nodes-langchain.lmChatGroq", 1, pos,
-                {"model": GROQ_MODEL, "options": {"temperature": 0}})
+                {"model": GROQ_MODEL, "options": {"temperature": 0}},
+                credentials={"groqApi": {"id": "", "name": "Groq account"}})
 
 
 CFG = "$('Config').first().json"
@@ -49,17 +51,25 @@ SAFE = {"onError": "continueRegularOutput"}
 RETRY = {"retryOnFail": True, "maxTries": 2, "waitBetweenTries": 2000}
 
 # ---------------------------------------------------------------- 1. intake
+UPLOAD_HTML = (
+    "<p>Upload the carrier's demurrage or detention invoice. The AI reads it, the audit engine checks every billed "
+    "day against your contract, the terminal's gate records, port holidays and the US FMC billing rules. "
+    "Then you decide what to do.</p>"
+    f"<p>No invoice to hand? Download a sample: <a href=\"{ENGINE_URL}/samples/invoice_A_overcharged.pdf\">A, overcharged</a>, "
+    f"<a href=\"{ENGINE_URL}/samples/invoice_B_correct.pdf\">B, correct</a>, "
+    f"<a href=\"{ENGINE_URL}/samples/invoice_C_late_fmc.pdf\">C, sent too late</a>.</p>"
+)
 node("Upload Invoice", "n8n-nodes-base.formTrigger", 2.2, (0, 300), {
-    "formTitle": "DemurrageGuard: audit a carrier invoice",
-    "formDescription": ("Upload a demurrage / detention invoice (PDF). AI reads it, our engine checks it "
-                        "against your contract, terminal gate records, the port calendar and US FMC billing "
-                        "rules. Then you decide what to do."),
+    "formTitle": "Audit a demurrage invoice",
+    "formDescription": "",
     "formFields": {"values": [
+        {"fieldType": "html", "elementName": "intro", "html": UPLOAD_HTML},
         {"fieldLabel": "Invoice PDF", "fieldType": "file", "multipleFiles": False,
          "acceptFileTypes": ".pdf", "requiredField": True},
     ]},
-    "options": {"appendAttribution": False, "buttonLabel": "Audit invoice", "customCss": FORM_CSS},
-}, webhookId=nid())
+    "options": {"appendAttribution": False, "buttonLabel": "Check this invoice", "path": "audit",
+                "customCss": FORM_CSS},
+}, webhookId=nid(), notes="Public form: <n8n URL>/form/audit")
 
 node("Read PDF Text", "n8n-nodes-base.extractFromFile", 1, (220, 300), {
     "operation": "pdf",
@@ -197,7 +207,7 @@ node("Human: Fix Details", "n8n-nodes-base.form", 1, (1760, 520), {
         {"fieldLabel": "Rate per day", "fieldType": "number", "defaultValue": prefill("rate_per_day")},
         {"fieldLabel": "Total amount", "fieldType": "number", "defaultValue": prefill("total_amount")},
     ]},
-    "options": {"formTitle": "Check the invoice details", "buttonLabel": "Re-run audit", "customCss": FORM_CSS},
+    "options": {"formTitle": "Check the invoice details", "buttonLabel": "Check again", "customCss": FORM_CSS},
 }, webhookId=nid())
 
 APPLY_JS = r"""// Merge the human's corrections over what the AI extracted.
@@ -223,7 +233,7 @@ node("Engine: Re-audit", "n8n-nodes-base.httpRequest", 4.2, (2200, 520), {
 node("Re-verified?", "n8n-nodes-base.if", 2.2, (2420, 520), COND("={{ $json.ok === true }}"))
 node("Cannot Verify", "n8n-nodes-base.form", 1, (2640, 720), {
     "operation": "completion",
-    "completionTitle": "Could not verify this invoice",
+    "completionTitle": "This invoice can't be checked yet",
     "completionMessage": ("={{ (($json.error && $json.error.message) || 'The audit engine is unavailable.') + "
                           "' Do not pay yet: forward the invoice to the logistics team for a manual check.' }}"),
     "options": {"customCss": FORM_CSS},
@@ -251,7 +261,7 @@ node("Human: Decide", "n8n-nodes-base.form", 1, (2860, 300), {
         {"fieldLabel": "Reason", "fieldType": "textarea", "requiredField": True,
          "placeholder": "Why? e.g. key partner, our trucker was also late on the last day"},
     ]},
-    "options": {"formTitle": "Verdict: your call", "buttonLabel": "Submit decision", "customCss": FORM_CSS},
+    "options": {"formTitle": "Verdict: your call", "buttonLabel": "Confirm decision", "customCss": FORM_CSS},
 }, webhookId=nid(), notes="HUMAN GATE 1: the business decision the AI cannot make.")
 
 SW_RULE = lambda value, key: {  # noqa: E731
@@ -329,8 +339,9 @@ node("Engine: Check Letter", "n8n-nodes-base.httpRequest", 4.2, (3740, 400), {
     "options": {"timeout": 20000},
 }, **SAFE, **RETRY, notes="Letter guard: any money amount the engine did not produce -> fall back to the verified template.")
 
-REVIEW_HTML = ("={{ '<code>' + ($json.source === 'ai_draft' ? '\\u2713 ' : '! ') + ($json.guard_note || '') + '</code>"
-               "<p>Edit the letter below if you want. Nothing is sent until you approve it.</p>' }}")
+REVIEW_HTML = ("={{ ($json.source === 'ai_draft' ? '<code>\\u2713 ' + ($json.guard_note || '') + '</code>' "
+               ": '<p><strong>' + ($json.guard_note || '') + '</strong></p>') "
+               "+ '<p>Edit the letter below if you want. Nothing is sent until you approve it.</p>' }}")
 node("Human: Review Letter", "n8n-nodes-base.form", 1, (3960, 400), {
     "formFields": {"values": [
         {"fieldType": "html", "elementName": "letter_check", "html": REVIEW_HTML},

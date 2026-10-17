@@ -24,13 +24,13 @@ Fill the blanks, export to PDF, open every link from a logged-out private window
   (FastAPI) exposed as REST and as an MCP server, Groq (openai/gpt-oss-120b), deployed on Alternate Clouds.
 
 ## 3. Links
-- Live app (n8n form): https://demurrage-n8n-app.alternatefutures.ai/form/11e0b587-7469-4435-8a19-2756043418b3
-- Engine (verdicts, decision log, MCP): https://demurrage-engine-app.alternatefutures.ai
+- Live app (n8n form): https://n8n-j3bs-app.alternatefutures.ai/form/f7eb5050-cf5f-480c-8da6-5534edf3981b
+- Engine (verdicts, decision log, MCP): https://alternate-glowing-serpent-8906-github-app.alternatefutures.ai
 - GitHub: https://github.com/HyyBoi/demurrage-guard (workflow JSON in `n8n/`)
 - Demo video: ____ (unlisted YouTube or Drive "anyone with the link")
 - LinkedIn post: ____   Reshare: ____
 - X post (optional): ____
-- Sample invoices for judges: https://demurrage-engine-app.alternatefutures.ai/samples/invoice_A_overcharged.pdf
+- Sample invoices for judges: https://alternate-glowing-serpent-8906-github-app.alternatefutures.ai/samples/invoice_A_overcharged.pdf
   (also `_B_correct.pdf`, `_C_late_fmc.pdf`)
 - Login: none needed for the form or the engine.
 

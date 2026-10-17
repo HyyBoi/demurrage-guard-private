@@ -62,8 +62,8 @@ Open http://localhost:8000 and http://localhost:8000/demo/A. Ctrl+C to stop.
 6. **Rebuild** -> wait for success -> **Deploy**.
 7. Logs tab must show `Application startup complete`.
 8. Open in a private window:
-   - `https://demurrage-engine-app.alternatefutures.ai/health` -> `{"status":"ok",...}`
-   - `https://demurrage-engine-app.alternatefutures.ai/demo/A` -> "Overcharged by $875"
+   - `https://alternate-glowing-serpent-8906-github-app.alternatefutures.ai/health` -> `{"status":"ok",...}`
+   - `https://alternate-glowing-serpent-8906-github-app.alternatefutures.ai/demo/A` -> "Overcharged by $875"
 
 502 Bad Gateway = PORT mismatch. Fix PORT to 8000, Rebuild, Deploy.
 
@@ -113,7 +113,7 @@ Open the production form URL in a private window and upload each sample from `sa
 | `invoice_C_late_fmc.pdf` | "Invoice invalid under FMC rules: $525 not payable" |
 
 Then pick **Partial dispute**, amount `400`, a reason, approve the letter. Check
-`https://demurrage-engine-app.alternatefutures.ai/` -> your decision appears in the Human decision log.
+`https://alternate-glowing-serpent-8906-github-app.alternatefutures.ai/` -> your decision appears in the Human decision log.
 
 ## 5. If something breaks
 

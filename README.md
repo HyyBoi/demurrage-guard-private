@@ -141,4 +141,3 @@ demonstration and are not legal advice.
 - Typefaces [Big Shoulders Display](https://fonts.google.com/specimen/Big+Shoulders+Display) and
   [Archivo](https://fonts.google.com/specimen/Archivo), SIL Open Font License, via [Fontsource](https://fontsource.org)
 - Hosted on [Alternate Clouds](https://clouds.alternatefutures.ai)
-- AI coding assistance: Claude (Anthropic) helped write code and docs; the team reviewed, tested and deployed it.
